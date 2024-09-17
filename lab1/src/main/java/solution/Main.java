@@ -7,8 +7,8 @@ class Variant4 implements TaylorSeries {
     @Override
     public SeriesElement getNext(SeriesElement prev, double x) {
         int k = prev.k + 1;
-        double sub_value = prev.sub_value * (-1) * Math.pow(x, 2) / (k + 2);
-        double real_value = sub_value / (k + 1);
+        double sub_value = prev.sub_value * (-1) * x / k;
+        double real_value = sub_value * Math.pow(x, 2)/ (Math.pow(k + 1, 2) * (k + 2));
         return new SeriesElement(sub_value, real_value, k);
     }
 }
