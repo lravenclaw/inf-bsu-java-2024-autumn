@@ -1,17 +1,15 @@
-package solution;
-
 import java.util.StringTokenizer;
 
 public class Main {
     public static void main(String[] args) {
-        if (args.length > 0) {
-            String input = args[0];
+        String expression = "";
+	    if (args.length > 0) {
+            expression = args[0];
         } else {
             System.out.println("No cmd args found.");
         }
 
-        String expression = "X+5-5+X-2"; //input;
-        int x = 10;
+       	int x = 10;
 
         try {
             System.out.println("Result: " + evaluateExpression(expression, x));
