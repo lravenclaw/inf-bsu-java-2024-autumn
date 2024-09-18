@@ -10,10 +10,14 @@ public class Main {
             System.out.println("No cmd args found.");
         }
 
-        String expression = "X+5-3+X-2";
+        String expression = "X+5-5+X-2"; //input;
         int x = 10;
-        int result = evaluateExpression(expression, x);
-        System.out.println("Result: " + result);
+
+        try {
+            System.out.println("Result: " + evaluateExpression(expression, x));
+        } catch (Exception e) {
+            System.out.println("Invalid input");
+        }
     }
 
     enum Operation {
