@@ -56,10 +56,35 @@ class MatrixTools {
         return result;
     }
 
+    public static boolean isLocalMin(int[][] matrix, Pair<Integer, Integer> pair) {
+        boolean result = true;
+        Integer current = matrix[pair.first][pair.second];
+
+        if (matrix.length == 0) {
+            return false;
+        }
+
+        if (pair.first + 1 < matrix.length) {
+            result &= current < matrix[pair.first + 1][pair.second];
+        }
+        if (pair.first > 0 && matrix.length > 1) {
+            result &= current < matrix[pair.first - 1][pair.second];
+        }
+        if (pair.second + 1 < matrix[0].length) {
+            result &= current < matrix[pair.first][pair.second + 1];
+        }
+        if (pair.second > 0 && matrix[0].length > 1) {
+            result &= current < matrix[pair.first][pair.second - 1];
+        }
+
+        return result;
+    }
+
+
     public static Vector<Pair<Integer, Integer>> getLocalMaxes(int[][] matrix) {
         Vector<Pair<Integer, Integer>> result = new Vector<>();
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[0].length; j++) {
+        for (int i = 0; i < matrix.length; ++i) {
+            for (int j = 0; j < matrix[0].length; ++j) {
                 Pair<Integer, Integer> current_pos = new Pair<>(i, j);
                 if (isLocalMax(matrix, current_pos)) {
                     result.add(current_pos);
@@ -68,5 +93,19 @@ class MatrixTools {
         }
         return result;
     }
+
+    public static Vector<Pair<Integer, Integer>> getLocalMins(int[][] matrix) {
+        Vector<Pair<Integer, Integer>> result = new Vector<>();
+        for (int i = 0; i < matrix.length; ++i) {
+            for (int j = 0; j < matrix[0].length; ++j) {
+                Pair<Integer, Integer> current_pos = new Pair<>(i, j);
+                if (isLocalMin(matrix, current_pos)) {
+                    result.add(current_pos);
+                }
+            }
+        }
+        return result;
+    }
+
 
 }
