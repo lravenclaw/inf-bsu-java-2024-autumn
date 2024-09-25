@@ -11,9 +11,10 @@ class MatrixTools {
         Scanner sc;
         try {
             sc = new Scanner(file);
-        } catch (FileNotFoundException _) {
-            throw new RuntimeException();
+        } catch (FileNotFoundException e) {
+            throw e;
         }
+
         int rows = sc.nextInt();
         int cols = sc.nextInt();
 
@@ -23,9 +24,16 @@ class MatrixTools {
             for (int j = 0; j < cols; j++) {
                 if (sc.hasNextInt()) {
                     matrix[i][j] = sc.nextInt();
+                } else if (i < rows - 1 || j < cols - 1) {
+                    throw new NotEnoughDataException("Not enough data in file");
                 }
             }
         }
+
+        if (sc.hasNextInt()) {
+            throw new TooMuchDataException("Too much data in file");
+        }
+
         sc.close();
 
         return matrix;
