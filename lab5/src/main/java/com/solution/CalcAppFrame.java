@@ -2,47 +2,44 @@ package com.solution;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 
+
 public class CalcAppFrame extends JFrame implements ActionListener{
-    JLabel originLabel, differenceLabel, resultLabel, amountLabel;
-    JTextField originField, differenceField, amountField;
+    JLabel startLabel, stepLabel, countLabel;
+    JTextField startField, stepField, countField;
     JTextArea resultArea;
     JComboBox sequenceChooser;
     JButton confirmButton;
-    JFileChooser fileChooser;
 
     public CalcAppFrame() {
         setTitle("Series");
         setLayout(new FlowLayout());
 
-        originLabel = new JLabel("origin");
-        this.add(originLabel);
+        startLabel = new JLabel("start");
+        this.add(startLabel);
 
-        originField = new JTextField(8);
-        this.add(originField);
+        startField = new JTextField(8);
+        this.add(startField);
 
-        differenceLabel = new JLabel("difference");
-        this.add(differenceLabel);
+        stepLabel = new JLabel("step");
+        this.add(stepLabel);
 
-        differenceField = new JTextField(8);
-        this.add(differenceField);
+        stepField = new JTextField(8);
+        this.add(stepField);
 
-        amountLabel = new JLabel("amount of elements");
-        this.add(amountLabel);
+        countLabel = new JLabel("amount of elements");
+        this.add(countLabel);
 
-        amountField = new JTextField(8);
-        this.add(amountField);
+        countField = new JTextField(8);
+        this.add(countField);
+
 
         String[] types = {"Linear", "Exponential"};
         sequenceChooser = new JComboBox(types);
         this.add(sequenceChooser);
-
-        fileChooser = new JFileChooser();
-        this.add(fileChooser);
 
         confirmButton = new JButton("Calculate");
         confirmButton.setSize(200, 50);
@@ -58,25 +55,35 @@ public class CalcAppFrame extends JFrame implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent event) {
+        File file = null;
         int type = sequenceChooser.getSelectedIndex();
-        File file = fileChooser.getSelectedFile();
 
-        int origin = Integer.parseInt(originField.getText());
-        int difference = Integer.parseInt(differenceField.getText());
-        int amount = Integer.parseInt(amountField.getText());
+        Integer start = Integer.parseInt(startField.getText());
+        Integer step = Integer.parseInt(stepField.getText());
+        int count = Integer.parseInt(countField.getText());
         String result;
 
         Series sequence;
         if (type == 0){
-            sequence = new Linear(origin, difference);
+            sequence = new Linear(start, step, count);
         } else {
-            sequence = new Exponential(origin, difference);
+            sequence = new Exponential(start, step, count);;
         }
-        result = sequence.toString(amount);
+        result = sequence.toString();
         resultArea.setText(formatResultStr(result, 70));
 
         try {
-            sequence.saveToFile(file, amount);
+            JFileChooser fileChooser = new JFileChooser();
+            int dialog_window_choose = fileChooser.showOpenDialog(this);
+            if (dialog_window_choose == JFileChooser.APPROVE_OPTION) {
+                file = fileChooser.getSelectedFile();
+            }
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            sequence.saveToFile(file);
         } catch (IOException e) {
             throw new RuntimeException("Can't write to file", e);
         }

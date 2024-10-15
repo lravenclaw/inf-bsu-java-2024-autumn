@@ -3,34 +3,56 @@ package com.solution;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.*;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public abstract class Series {
+    private int start, step,count;
+
+    Series() {
+        count = 0;
+    }
+
+    Series(int start, int step, int count) {
+        this.start = start;
+        this.step = step;
+        this.count = count;
+    }
+
     public abstract int getElement(int i);
 
-    public int sumOf(int k){
+    public int sumOf(){
         int result = 0;
-        for (int i = 0; i < k; i++){
+        for (int i = 0; i < count; ++i){
             result += getElement(i);
         }
         return result;
     }
 
-    public String toString(int k){
-        if (k == 0){
+    public String toString(){
+        if (count == 0){
             return String.valueOf(getElement(0));
         }
 
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < k - 1; i++){
+        for (int i = 0; i < count - 1; i++){
             result.append(String.valueOf(getElement(i))).append(", ");
         }
-        result.append(String.valueOf(getElement(k - 1)));
+        result.append(String.valueOf(getElement(count - 1)));
         return String.valueOf(result);
     }
 
-    public void saveToFile(File file, int k) throws IOException{
+    public void saveToFile(File file) throws IOException, RuntimeException {
+        if (file == null) {
+            throw new RuntimeException("Invalid argument! Expected file, null passed.");
+        }
+
         FileWriter writer = new FileWriter(file);
-        writer.write(this.toString(k));
+        writer.write(this.toString());
         writer.flush();
         writer.close();
     }

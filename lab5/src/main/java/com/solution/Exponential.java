@@ -1,18 +1,14 @@
 package com.solution;
 
 public class Exponential extends Series {
-    int origin;
-    int product;
-
-    public Exponential(int origin, int product) {
-        this.origin = origin;
-        this.product = product;
+    Exponential(int start, int step, int count) {
+        super(start, step, count);
     }
 
     public int getElement(int i) {
-        if (i == 0){
-            return origin;
+        if (i == 0) {
+            return this.getStart();
         }
-        return getElement(i - 1) * product;
+        return getElement(i - 1) * this.getStep();
     }
 }

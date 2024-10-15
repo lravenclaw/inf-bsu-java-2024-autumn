@@ -1,18 +1,15 @@
 package com.solution;
 
 public class Linear extends Series {
-    int origin;
-    int difference;
-
-    public Linear(int origin, int difference) {
-        this.origin = origin;
-        this.difference = difference;
+    Linear(int start, int step, int count) {
+        super(start, step, count);
     }
 
+    @Override
     public int getElement(int i) {
         if (i == 0){
-            return origin;
+            return this.getStart();
         }
-        return getElement(i - 1) + difference;
+        return getElement(i - 1) + this.getStep();
     }
 }
