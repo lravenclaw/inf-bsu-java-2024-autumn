@@ -3,8 +3,7 @@ package com.solution;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 
 public class CalcAppFrame extends JFrame implements ActionListener{
@@ -47,7 +46,7 @@ public class CalcAppFrame extends JFrame implements ActionListener{
         confirmButton.addActionListener(this);
 
         resultArea = new JTextArea(" ");
-        resultArea.setColumns(40);
+        resultArea.setColumns(20);
         this.add(resultArea);
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -86,6 +85,8 @@ public class CalcAppFrame extends JFrame implements ActionListener{
             sequence.saveToFile(file);
         } catch (IOException e) {
             throw new RuntimeException("Can't write to file", e);
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
         }
     }
 
