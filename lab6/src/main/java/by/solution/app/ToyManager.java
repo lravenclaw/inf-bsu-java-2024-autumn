@@ -31,6 +31,8 @@ public class ToyManager extends JFrame {
         exitItem.addActionListener(e -> System.exit(0));
         fileMenu.add(exitItem);
 
+        JMenu viewMenu = new JMenu("Вид");
+
         JMenu sortMenu = new JMenu("Сортировка");
         JMenuItem sortByPriceItem = new JMenuItem("По цене");
         sortByPriceItem.addActionListener(e -> sortToys(Toy.byPrice));
@@ -44,8 +46,10 @@ public class ToyManager extends JFrame {
         sortByNameItem.addActionListener(e -> sortToys(Toy.byName));
         sortMenu.add(sortByNameItem);
 
+        viewMenu.add(sortMenu);
+
         menuBar.add(fileMenu);
-        menuBar.add(sortMenu);
+        menuBar.add(viewMenu);
         setJMenuBar(menuBar);
 
         displayArea = new JTextArea();
