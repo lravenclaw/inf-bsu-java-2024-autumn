@@ -1,6 +1,7 @@
 package by.solution.app;
 
 import by.solution.data.Toy;
+import by.solution.parser.ToyParser;
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,19 +69,11 @@ public class ToyManager extends JFrame {
     }
 
     private void readToysFromFile(File file) {
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            toys.clear();
+        try {
+            toys = ToyParser.readToysFromFile(file);
             StringBuilder displayText = new StringBuilder();
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                Toy toy = new Toy(parts[0], Double.parseDouble(parts[1]), Integer.parseInt(parts[2]));
-                toys.add(toy);
-                displayText.append(toy.toString()).append("\n");
-            }
             displayArea.setText(displayText.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(this, "Ошибка при чтении файла", "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
     }
