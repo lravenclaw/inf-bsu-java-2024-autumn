@@ -1,135 +1,189 @@
 package by.piasecki.studentData.app;
 
-import by.piasecki.studentData.data.StudentData;
-import by.piasecki.studentData.parser.StudentDataReader;
+import by.piasecki.studentData.data.*;
+import by.piasecki.studentData.parser.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.util.*;
+import java.io.File;
 import java.util.List;
-
-import by.piasecki.studentData.data.StudentData; // Adjust the package according to your structure
-import by.piasecki.studentData.parser.StudentDataReader; // Adjust the package according to your structure
+import java.util.Optional;
 
 public class AppFrame extends JFrame {
-    private JTable table;
+    private JTable studentTable;
     private DefaultTableModel tableModel;
-    private JButton loadButton;
-    private JButton statsButton;
+    private StudentCollection<AbstractStudent> studentCollection;
 
     public AppFrame() {
-        setTitle("Student Data Manager");
+        setTitle("Student Management");
+        setLayout(new BorderLayout());
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
 
-        // Set up the main table with columns for subjects
-        String[] columnNames = {"Full Name", "Marks"};
+        // Table for displaying student data
+        String[] columnNames = {"Type", "Full Name", "School Name", "Average Score", "School Score"};
         tableModel = new DefaultTableModel(columnNames, 0);
-        table = new JTable(tableModel);
-        JScrollPane scrollPane = new JScrollPane(table);
+        studentTable = new JTable(tableModel);
 
-        // Load and Stats buttons
-        loadButton = new JButton("Load Data");
-        loadButton.addActionListener(new LoadDataButtonListener());
-
-        statsButton = new JButton("Calculate Stats");
-        statsButton.addActionListener(new StatsButtonListener());
-
-        // Layout setup
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(loadButton);
-        buttonPanel.add(statsButton);
-
-        setLayout(new BorderLayout());
+        // Scroll pane for the table
+        JScrollPane scrollPane = new JScrollPane(studentTable);
         add(scrollPane, BorderLayout.CENTER);
+
+        // Button Panel
+        JPanel buttonPanel = new JPanel();
+        Button loadButton = new Button("Load Students");
+        Button sortedButton = new Button("Sorted Students");
+        Button countButton = new Button("Count Students");
+        Button searchButton = new Button("Search Student");
+        Button filteringButton = new Button("Rating Ratio");
+        Button lastNamesButton = new Button("Last Names starting with B");
+
+        // Add buttons to panel
+        buttonPanel.add(loadButton);
+        buttonPanel.add(sortedButton);
+        buttonPanel.add(countButton);
+        buttonPanel.add(searchButton);
+        buttonPanel.add(filteringButton);
+        buttonPanel.add(lastNamesButton);
         add(buttonPanel, BorderLayout.SOUTH);
+
+        // Action Listeners
+        loadButton.addActionListener(new LoadButtonListener());
+        sortedButton.addActionListener(new SortedButtonListener());
+        countButton.addActionListener(new CountButtonListener());
+        searchButton.addActionListener(new SearchButtonListener());
+        filteringButton.addActionListener(new FilteringButtonListener());
+        lastNamesButton.addActionListener(new LastNamesButtonListener());
+
+        setVisible(true);
     }
 
-    private class LoadDataButtonListener implements ActionListener {
+    // Load students from CSV and populate table
+    class LoadButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             JFileChooser fileChooser = new JFileChooser();
             int returnValue = fileChooser.showOpenDialog(null);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
-                java.io.File file = fileChooser.getSelectedFile();
-                loadDataFromFile(file.getAbsolutePath());
+                File file = fileChooser.getSelectedFile();
+                List<AbstractStudent> students = StudentParser.parseCSV(file.getAbsolutePath());
+                studentCollection = new StudentCollection<>(students);
+                populateTable(students);
             }
         }
     }
 
-    private void loadDataFromFile(String filePath) {
-        tableModel.setRowCount(0); // Clear existing data
-        try {
-            List<StudentData> students = StudentDataReader.readStudentsFromFile(filePath);
-            for (StudentData student : students) {
-                StringBuilder marksBuilder = new StringBuilder();
-                for (Map.Entry<String, Integer> entry : student.getMarks().entrySet()) {
-                    marksBuilder.append(entry.getKey()).append(":").append(entry.getValue()).append(", ");
-                }
-                // Remove trailing comma and space
-                if (marksBuilder.length() > 0) {
-                    marksBuilder.setLength(marksBuilder.length() - 2);
-                }
-                tableModel.addRow(new Object[]{student.getFullName(), marksBuilder.toString()});
-            }
+    // Display sorted student data
+    class SortedButtonListener implements ActionListener {
+        @Override
 
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, "Error reading file: " + ex.getMessage());
+        public void actionPerformed(ActionEvent e) {
+            if (studentCollection == null) {
+                JOptionPane.showMessageDialog(null, "Please load students first.");
+                return;
+            }
+            List<AbstractStudent> sortedStudents = studentCollection.sortedBySchoolAndLastName();
+            showResultsInTable(sortedStudents, "Sorted Students");
         }
     }
 
-    private class StatsButtonListener implements ActionListener {
+    // Show count of students in a specified school
+    class CountButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // Create a new JFrame for statistics
-            JFrame statsFrame = new JFrame("Student Statistics");
-            statsFrame.setSize(500, 300);
-            statsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Allow closing
-
-            // Create a table for displaying statistics
-            String[] statsColumnNames = {"Student", "Average Score", "Max Score", "Min Score"};
-            DefaultTableModel statsModel = new DefaultTableModel(statsColumnNames, 0);
-            JTable statsTable = new JTable(statsModel);
-
-            int rowCount = tableModel.getRowCount();
-            for (int i = 0; i < rowCount; i++) {
-                String fullName = (String) tableModel.getValueAt(i, 0);
-                String marksString = (String) tableModel.getValueAt(i, 1);
-                String[] marksArray = marksString.split(", ");
-                double totalScore = 0;
-                double maxScore = Double.MIN_VALUE;
-                double minScore = Double.MAX_VALUE;
-                int count = 0;
-
-                for (String mark : marksArray) {
-                    String[] subjectPart = mark.split(":");
-                    if (subjectPart.length == 2) {
-                        try {
-                            Integer score = Integer.parseInt(subjectPart[1].trim());
-                            totalScore += score;
-                            maxScore = Math.max(maxScore, score);
-                            minScore = Math.min(minScore, score);
-                            count++;
-                        } catch (NumberFormatException e1) {
-                            // Handle invalid integer conversion
-                        }
-                    }
-                }
-
-                if (count > 0) {
-                    double averageScore = totalScore / count;
-                    statsModel.addRow(new Object[]{fullName, averageScore, maxScore, minScore});
-                }
+            if (studentCollection == null) {
+                JOptionPane.showMessageDialog(null, "Please load students first.");
+                return;
             }
-
-            // Add to statsFrame
-            statsFrame.add(new JScrollPane(statsTable), BorderLayout.CENTER);
-            statsFrame.setVisible(true); // Show the statsFrame
+            String schoolName = JOptionPane.showInputDialog("Enter school name:");
+            long count = studentCollection.countStudentsInSchool(schoolName);
+            JOptionPane.showMessageDialog(null, "Count of students in " + schoolName + ": " + count);
         }
+    }
+
+    // Search for a student by full name
+    class SearchButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (studentCollection == null) {
+                JOptionPane.showMessageDialog(null, "Please load students first.");
+                return;
+            }
+            String studentName = JOptionPane.showInputDialog("Enter full name of the student:");
+            Optional<AbstractStudent> result = studentCollection.binarySearch(new MiddleSchoolStudent(studentName, "", 0, 0, 0, 0)); // adapt according to your actual fields
+            showResultsInTable(result.isPresent() ? List.of(result.get()) : List.of(), "Search Result");
+        }
+    }
+
+    // Display students filtered by rating ratio
+    class FilteringButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (studentCollection == null) {
+                JOptionPane.showMessageDialog(null, "Please load students first.");
+                return;
+            }
+            List<AbstractStudent> filteredStudents = studentCollection.filterByRatingRatio();
+            showResultsInTable(filteredStudents, "Filtered by Rating Ratio");
+        }
+    }
+
+    // Display last names starting with 'B'
+    class LastNamesButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (studentCollection == null) {
+                JOptionPane.showMessageDialog(null, "Please load students first.");
+                return;
+            }
+            List<String> lastNames = studentCollection.lastNamesStartingWith("B");
+            showLastNamesInTable(lastNames, "Last Names Starting with B");
+        }
+    }
+
+    private void populateTable(List<AbstractStudent> students) {
+        tableModel.setRowCount(0); // Clear existing data
+        for (AbstractStudent student : students) {
+            String studentType = student instanceof MiddleSchoolStudent ? "Middle School" : "University";
+            tableModel.addRow(new Object[]{studentType, student.getFullName(), student.getSchoolName(), student.getAverageMark(), student.getSchoolScore()});
+        }
+    }
+
+    private void showResultsInTable(List<AbstractStudent> students, String title) {
+        JDialog dialog = new JDialog(this, title, true);
+        dialog.setLayout(new BorderLayout());
+        dialog.setSize(600, 400);
+
+        String[] columnNames = {"Type", "Full Name", "School Name", "Average Score", "School Score"};
+        DefaultTableModel resultTableModel = new DefaultTableModel(columnNames, 0);
+
+        JTable resultTable = new JTable(resultTableModel);
+
+        for (AbstractStudent student : students) {
+            String studentType = student instanceof MiddleSchoolStudent ? "Middle School" : "University";
+            resultTableModel.addRow(new Object[]{studentType, student.getFullName(), student.getSchoolName(), student.getAverageMark(), student.getSchoolScore()});
+        }
+
+        dialog.add(new JScrollPane(resultTable), BorderLayout.CENTER);
+        dialog.setVisible(true);
+    }
+
+    private void showLastNamesInTable(List<String> lastNames, String title) {
+        JDialog dialog = new JDialog(this, title, true);
+        dialog.setLayout(new BorderLayout());
+        dialog.setSize(300, 300);
+
+        DefaultTableModel lastNamesModel = new DefaultTableModel(new String[]{"Last Names"}, 0);
+        JTable lastNamesTable = new JTable(lastNamesModel);
+
+        for (String lastName : lastNames) {
+            lastNamesModel.addRow(new Object[]{lastName});
+        }
+
+        dialog.add(new JScrollPane(lastNamesTable), BorderLayout.CENTER);
+        dialog.setVisible(true);
     }
 }

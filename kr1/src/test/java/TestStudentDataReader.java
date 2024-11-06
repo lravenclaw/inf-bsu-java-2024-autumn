@@ -8,7 +8,7 @@ import java.util.*;
 public class TestStudentDataReader {
     public static void main(String[] args) {
         try {
-            List<StudentData> students = StudentDataReader.readStudentsFromFile("src/main/resources/input.txt");
+            List<StudentData> students = StudentDataReader.readStudentsFromFile("src/main/resources/input.csv");
             for (StudentData student : students) {
                 System.out.println(student); // This will display average scores
             }
