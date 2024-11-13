@@ -32,5 +32,6 @@ public abstract class AbstractStudent {
         return averageMark;
     }
 
-    abstract int getScore();
+    public abstract String getType();
+    public abstract int getScore();
 }

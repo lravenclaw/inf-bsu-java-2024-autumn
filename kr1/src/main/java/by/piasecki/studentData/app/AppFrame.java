@@ -10,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.List;
-import java.util.Optional;
 
 public class AppFrame extends JFrame {
     private JTable studentTable;
@@ -23,25 +22,21 @@ public class AppFrame extends JFrame {
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Table for displaying student data
         String[] columnNames = {"Type", "Full Name", "School Name", "Average Score", "School Score"};
         tableModel = new DefaultTableModel(columnNames, 0);
         studentTable = new JTable(tableModel);
 
-        // Scroll pane for the table
         JScrollPane scrollPane = new JScrollPane(studentTable);
         add(scrollPane, BorderLayout.CENTER);
 
-        // Button Panel
         JPanel buttonPanel = new JPanel();
-        Button loadButton = new Button("Load Students");
-        Button sortedButton = new Button("Sorted Students");
-        Button countButton = new Button("Count Students");
-        Button searchButton = new Button("Search Student");
-        Button filteringButton = new Button("Rating Ratio");
-        Button lastNamesButton = new Button("Last Names starting with B");
+        JButton loadButton = new JButton("Load Students");
+        JButton sortedButton = new JButton("Sorted Students");
+        JButton countButton = new JButton("Count Students");
+        JButton searchButton = new JButton("Search Student");
+        JButton filteringButton = new JButton("Rating Ratio");
+        JButton lastNamesButton = new JButton("Last Names starting with B");
 
-        // Add buttons to panel
         buttonPanel.add(loadButton);
         buttonPanel.add(sortedButton);
         buttonPanel.add(countButton);
@@ -50,7 +45,6 @@ public class AppFrame extends JFrame {
         buttonPanel.add(lastNamesButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Action Listeners
         loadButton.addActionListener(new LoadButtonListener());
         sortedButton.addActionListener(new SortedButtonListener());
         countButton.addActionListener(new CountButtonListener());
@@ -61,7 +55,6 @@ public class AppFrame extends JFrame {
         setVisible(true);
     }
 
-    // Load students from CSV and populate table
     class LoadButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -69,6 +62,12 @@ public class AppFrame extends JFrame {
             int returnValue = fileChooser.showOpenDialog(null);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
+
+                if (!file.getName().toLowerCase().endsWith(".csv")) {
+                    JOptionPane.showMessageDialog(null, "Error: Please select a valid CSV file.", "Invalid File", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 List<AbstractStudent> students = StudentParser.parseCSV(file.getAbsolutePath());
                 studentCollection = new StudentCollection<>(students);
                 populateTable(students);
@@ -76,10 +75,9 @@ public class AppFrame extends JFrame {
         }
     }
 
-    // Display sorted student data
+
     class SortedButtonListener implements ActionListener {
         @Override
-
         public void actionPerformed(ActionEvent e) {
             if (studentCollection == null) {
                 JOptionPane.showMessageDialog(null, "Please load students first.");
@@ -90,7 +88,6 @@ public class AppFrame extends JFrame {
         }
     }
 
-    // Show count of students in a specified school
     class CountButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -98,27 +95,22 @@ public class AppFrame extends JFrame {
                 JOptionPane.showMessageDialog(null, "Please load students first.");
                 return;
             }
-            String schoolName = JOptionPane.showInputDialog("Enter school name:");
-            long count = studentCollection.countStudentsInSchool(schoolName);
-            JOptionPane.showMessageDialog(null, "Count of students in " + schoolName + ": " + count);
+            int count = studentCollection.size();
+            JOptionPane.showMessageDialog(null, "Total Students: " + count);
         }
     }
 
-    // Search for a student by full name
     class SearchButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (studentCollection == null) {
-                JOptionPane.showMessageDialog(null, "Please load students first.");
-                return;
+            String searchTerm = JOptionPane.showInputDialog("Enter student name to search:");
+            if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+                List<AbstractStudent> foundStudents = studentCollection.searchByName(searchTerm);
+                showResultsInTable(foundStudents, "Search Results");
             }
-            String studentName = JOptionPane.showInputDialog("Enter full name of the student:");
-            Optional<AbstractStudent> result = studentCollection.binarySearch(new MiddleSchoolStudent(studentName, "", 0, 0, 0, 0)); // adapt according to your actual fields
-            showResultsInTable(result.isPresent() ? List.of(result.get()) : List.of(), "Search Result");
         }
     }
 
-    // Display students filtered by rating ratio
     class FilteringButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -126,12 +118,12 @@ public class AppFrame extends JFrame {
                 JOptionPane.showMessageDialog(null, "Please load students first.");
                 return;
             }
-            List<AbstractStudent> filteredStudents = studentCollection.filterByRatingRatio();
-            showResultsInTable(filteredStudents, "Filtered by Rating Ratio");
+            double ratioThreshold = Double.parseDouble(JOptionPane.showInputDialog("Enter minimum rating ratio:"));
+            List<AbstractStudent> filteredStudents = studentCollection.filterByRatingRatio(ratioThreshold);
+            showResultsInTable(filteredStudents, "Filtered Students");
         }
     }
 
-    // Display last names starting with 'B'
     class LastNamesButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -139,51 +131,36 @@ public class AppFrame extends JFrame {
                 JOptionPane.showMessageDialog(null, "Please load students first.");
                 return;
             }
-            List<String> lastNames = studentCollection.lastNamesStartingWith("B");
-            showLastNamesInTable(lastNames, "Last Names Starting with B");
+            String input = JOptionPane.showInputDialog("Enter the starting letter for last names:");
+            if (input != null && !input.trim().isEmpty() && input.length() == 1) {
+                List<AbstractStudent> students = studentCollection.getLastNamesStartingWith(input.toString());
+                if (students.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "No last names found starting with '" + input + "'.");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Last Names starting with '" + input + "':\n" + String.join(", "));
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Please enter a valid single character.");
+            }
         }
     }
 
+
     private void populateTable(List<AbstractStudent> students) {
-        tableModel.setRowCount(0); // Clear existing data
+        tableModel.setRowCount(0); // Clear existing rows
         for (AbstractStudent student : students) {
-            String studentType = student instanceof MiddleSchoolStudent ? "Middle School" : "University";
-            tableModel.addRow(new Object[]{studentType, student.getFullName(), student.getSchoolName(), student.getAverageMark(), student.getSchoolScore()});
+            tableModel.addRow(new Object[]{
+                    student.getType(),
+                    student.getFullName(),
+                    student.getSchoolName(),
+                    student.getAverageMark(),
+                    student.getSchoolScore()
+            });
         }
     }
 
     private void showResultsInTable(List<AbstractStudent> students, String title) {
-        JDialog dialog = new JDialog(this, title, true);
-        dialog.setLayout(new BorderLayout());
-        dialog.setSize(600, 400);
-
-        String[] columnNames = {"Type", "Full Name", "School Name", "Average Score", "School Score"};
-        DefaultTableModel resultTableModel = new DefaultTableModel(columnNames, 0);
-
-        JTable resultTable = new JTable(resultTableModel);
-
-        for (AbstractStudent student : students) {
-            String studentType = student instanceof MiddleSchoolStudent ? "Middle School" : "University";
-            resultTableModel.addRow(new Object[]{studentType, student.getFullName(), student.getSchoolName(), student.getAverageMark(), student.getSchoolScore()});
-        }
-
-        dialog.add(new JScrollPane(resultTable), BorderLayout.CENTER);
-        dialog.setVisible(true);
-    }
-
-    private void showLastNamesInTable(List<String> lastNames, String title) {
-        JDialog dialog = new JDialog(this, title, true);
-        dialog.setLayout(new BorderLayout());
-        dialog.setSize(300, 300);
-
-        DefaultTableModel lastNamesModel = new DefaultTableModel(new String[]{"Last Names"}, 0);
-        JTable lastNamesTable = new JTable(lastNamesModel);
-
-        for (String lastName : lastNames) {
-            lastNamesModel.addRow(new Object[]{lastName});
-        }
-
-        dialog.add(new JScrollPane(lastNamesTable), BorderLayout.CENTER);
-        dialog.setVisible(true);
+        populateTable(students);
+        JOptionPane.showMessageDialog(this, title, title, JOptionPane.INFORMATION_MESSAGE);
     }
 }

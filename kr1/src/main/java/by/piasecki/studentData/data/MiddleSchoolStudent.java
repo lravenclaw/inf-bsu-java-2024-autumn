@@ -33,7 +33,12 @@ public class MiddleSchoolStudent extends AbstractStudent {
     }
 
     @Override
-    int getScore() {
+    public String getType() {
+        return "Middle School";
+    }
+
+    @Override
+    public int getScore() {
         return K1 * schoolScore * averageMark * gradeNumber + K2 * behaviorScore;
     }
 }

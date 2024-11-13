@@ -1,10 +1,6 @@
 package by.piasecki.studentData.data;
 
 import java.util.*;
-
-import by.piasecki.studentData.data.AbstractStudent;
-
-import java.util.*;
 import java.util.stream.Collectors;
 
 public class StudentCollection<T extends AbstractStudent> {
@@ -49,18 +45,28 @@ public class StudentCollection<T extends AbstractStudent> {
         return index >= 0 ? Optional.of(sortedStudents.get(index)) : Optional.empty();
     }
 
-    public List<T> filterByRatingRatio() {
+    public List<T> filterByRatingRatio(double ratioThreshold) {
         return students.stream()
-                .filter(student -> (float) student.getSchoolScore() / student.getAverageMark() > 1)
+                .filter(student -> (float) student.getSchoolScore() / student.getAverageMark() > ratioThreshold)
                 .collect(Collectors.toList());
     }
 
-    public List<String> lastNamesStartingWith(String str) {
+    public List<T> getLastNamesStartingWith(String prefix) {
         return students.stream()
-                .map(student -> student.getFullName().split(" ")[1])
-                .filter(lastName -> lastName.startsWith(str))
-                .distinct()
-                .sorted(Comparator.reverseOrder())
+                .filter(student -> student.getFullName().split(" ").length > 1) // ensure there is a last name
+                .filter(student -> student.getFullName().split(" ")[1].startsWith(prefix))
                 .collect(Collectors.toList());
+    }
+
+    // Search by full name
+    public List<T> searchByName(String name) {
+        return students.stream()
+
+                .filter(student -> student.getFullName().toLowerCase().contains(name.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    public int size() {
+        return students.size();
     }
 }

@@ -13,33 +13,31 @@ import java.util.List;
 public class StudentParser {
 
     private static UniStudent parseUniStudent(String[] fields) {
-        // Expected length: 6 (Include student type + 5 other fields)
         if (fields.length != 6) {
             throw new IllegalArgumentException("Invalid number of fields for UniStudent: " + fields.length);
         }
 
         return new UniStudent(
-                fields[1].trim(),  // Full Name
-                fields[2].trim(),  // School Name
-                Integer.parseInt(fields[3].trim()),  // Average Mark
-                Integer.parseInt(fields[4].trim()),  // School Score
-                Integer.parseInt(fields[5].trim())   // Some other field for UniStudent
+                fields[1].trim(),
+                fields[2].trim(),
+                Integer.parseInt(fields[3].trim()),
+                Integer.parseInt(fields[4].trim()),
+                Integer.parseInt(fields[5].trim())
         );
     }
 
     private static MiddleSchoolStudent parseMiddleStudent(String[] fields) {
-        // Expected length: 7 (Include student type + 6 other fields)
         if (fields.length != 7) {
             throw new IllegalArgumentException("Invalid number of fields for MiddleSchoolStudent: " + fields.length);
         }
 
         return new MiddleSchoolStudent(
-                fields[1].trim(),      // Full Name
-                fields[2].trim(),      // School Name
-                Integer.parseInt(fields[3].trim()), // Average Mark
-                Integer.parseInt(fields[4].trim()), // School Score
-                Integer.parseInt(fields[5].trim()), // Some other field for MiddleSchool
-                Integer.parseInt(fields[6].trim())  // Another field for MiddleSchool
+                fields[1].trim(),
+                fields[2].trim(),
+                Integer.parseInt(fields[3].trim()),
+                Integer.parseInt(fields[4].trim()),
+                Integer.parseInt(fields[5].trim()),
+                Integer.parseInt(fields[6].trim())
         );
     }
 
@@ -51,7 +49,6 @@ public class StudentParser {
             while ((line = br.readLine()) != null) {
                 String[] fields = line.split(",");
 
-                // If the fields are empty, skip the line
                 if (fields.length == 0) {
                     System.out.println("Skipping empty line");
                     continue;

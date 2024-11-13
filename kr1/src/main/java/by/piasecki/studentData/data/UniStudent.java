@@ -27,7 +27,12 @@ public class UniStudent extends AbstractStudent {
     }
 
     @Override
-    int getScore() {
+    public String getType() {
+        return "University";
+    }
+
+    @Override
+    public int getScore() {
         return K1 * schoolScore * averageMark + K2 * courseNumber;
     }
 }
