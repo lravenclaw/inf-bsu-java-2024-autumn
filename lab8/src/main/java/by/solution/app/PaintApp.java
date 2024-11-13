@@ -134,7 +134,7 @@ class PaintApp extends JFrame {
                 @Override
                 public void mouseDragged(MouseEvent e) {
                     points.add(new Pair<>(new Point(e.getX(), e.getY()), currentColor));
-                    repaint();
+    ;               updatePanel();
                 }
             });
 
@@ -142,32 +142,41 @@ class PaintApp extends JFrame {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     points.add(new Pair<>(new Point(e.getX(), e.getY()), currentColor));
-                    repaint();
+                    updatePanel();
                 }
             });
         }
 
         @Override
-        protected void paintComponent(Graphics g) {
+        public void paintComponent(Graphics g) {
             super.paintComponent(g);
-            if (image != null) {
-                g.drawImage(image, 0, 0, null);
-            }
 
-            for (Pair<Point, Color> p : points) {
-                g.setColor(p.second);
-                g.fillOval(p.first.x, p.first.y, 5, 5);
+            if (image != null) {
+                g.drawImage(image, 0, 0, getWidth(), getHeight(), null);  // Увеличиваем изображение до размеров панели
             }
         }
 
         public void setImage(BufferedImage img) {
             this.image = img;
             points.clear();
-            repaint();
+            updatePanel();
         }
 
-        public void clearPoints() {
-            points.clear();
+        private void updatePanel() {
+            Graphics g = getGraphics();
+
+            if (g == null) {
+                return;
+            }
+            g.drawImage(image, 0, 0, null);
+
+            for (Pair<Point, Color> p : points) {
+                g.setColor(p.second);
+                g.fillOval(p.first.x, p.first.y, 5, 5);
+                g.drawOval(p.first.x, p.first.y, 5, 5);
+            }
+
+            g.dispose();
         }
     }
 

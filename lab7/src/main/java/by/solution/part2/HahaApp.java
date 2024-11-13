@@ -19,9 +19,9 @@ public class HahaApp extends JFrame {
         add(comfortingButton);
 
         fleeingButton = new JButton("к сожалению, нет");
-        fleeingButton.addMouseMotionListener(new MouseMotionAdapter() {
+        fleeingButton.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseMoved(MouseEvent e) {
+            public void mouseEntered(MouseEvent e) {
                 moveFleeingButton();
             }
         });

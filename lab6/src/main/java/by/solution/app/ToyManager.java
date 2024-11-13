@@ -5,14 +5,14 @@ import by.solution.parser.ToyParser;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class ToyManager extends JFrame {
-    private JTextArea displayArea;
+    private JTextArea displayAreaBefore;
+    private JTextArea displayAreaAfter;
     private List<Toy> toys;
 
     public ToyManager() {
@@ -53,10 +53,14 @@ public class ToyManager extends JFrame {
         menuBar.add(viewMenu);
         setJMenuBar(menuBar);
 
-        displayArea = new JTextArea();
-        displayArea.setEditable(false);
+        displayAreaBefore = new JTextArea();
+        displayAreaBefore.setEditable(false);
+        displayAreaBefore.
 
-        add(new JScrollPane(displayArea), BorderLayout.CENTER);
+        displayAreaAfter = new JTextArea();
+        displayAreaAfter.setEditable(false);
+
+        add(new JScrollPane(displayAreaBefore), BorderLayout.CENTER);
     }
 
     private void openFile() {
@@ -72,7 +76,7 @@ public class ToyManager extends JFrame {
         try {
             toys = ToyParser.readToysFromFile(file);
             StringBuilder displayText = new StringBuilder();
-            displayArea.setText(displayText.toString());
+            displayAreaBefore.setText(displayText.toString());
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(this, "Ошибка при чтении файла", "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
@@ -84,6 +88,6 @@ public class ToyManager extends JFrame {
         for (Toy toy : toys) {
             displayText.append(toy.toString()).append("\n");
         }
-        displayArea.setText(displayText.toString());
+        displayAreaBefore.setText(displayText.toString());
     }
 }

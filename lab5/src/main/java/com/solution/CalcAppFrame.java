@@ -57,10 +57,17 @@ public class CalcAppFrame extends JFrame implements ActionListener{
         File file = null;
         int type = sequenceChooser.getSelectedIndex();
 
-        Integer start = Integer.parseInt(startField.getText());
-        Integer step = Integer.parseInt(stepField.getText());
-        int count = Integer.parseInt(countField.getText());
+        Integer start, step, count;
         String result;
+
+        try {
+            start = Integer.parseInt(startField.getText().trim());
+            step = Integer.parseInt(stepField.getText().trim());
+            count = Integer.parseInt(countField.getText().trim());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Ошибка ввода, неверные данные!");
+            return;
+        }
 
         Series sequence;
         if (type == 0){
@@ -78,15 +85,18 @@ public class CalcAppFrame extends JFrame implements ActionListener{
                 file = fileChooser.getSelectedFile();
             }
         } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(this, "Ошибка выбора файла!");
+            return;
         }
 
         try {
             sequence.saveToFile(file);
         } catch (IOException e) {
-            throw new RuntimeException("Can't write to file", e);
-        } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(this, "Ошибка сохранения в файл.");
+            return;
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, "Фйл не выбран!");
+            return;
         }
     }
 

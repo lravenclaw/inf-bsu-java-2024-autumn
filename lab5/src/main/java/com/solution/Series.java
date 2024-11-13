@@ -46,9 +46,9 @@ public abstract class Series {
         return String.valueOf(result);
     }
 
-    public void saveToFile(File file) throws IOException, RuntimeException {
+    public void saveToFile(File file) throws IOException, IllegalArgumentException {
         if (file == null) {
-            throw new RuntimeException("Invalid argument! Expected file, null passed.");
+            throw new IllegalArgumentException("Invalid argument! Expected file, null passed.");
         }
 
         FileWriter writer = new FileWriter(file);
