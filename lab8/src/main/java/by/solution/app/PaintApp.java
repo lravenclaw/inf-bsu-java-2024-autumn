@@ -137,6 +137,14 @@ class PaintApp extends JFrame {
                     repaint();
                 }
             });
+
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    points.add(new Pair<>(new Point(e.getX(), e.getY()), currentColor));
+                    repaint();
+                }
+            });
         }
 
         @Override
