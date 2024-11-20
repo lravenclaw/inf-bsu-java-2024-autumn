@@ -3,9 +3,9 @@ package by.solution.data;
 import java.util.Comparator;
 
 public class Toy {
-    String name;
-    double price;
-    int ageLimit;
+    public String name;
+    public double price;
+    public int ageLimit;
 
     public Toy(String name, double price, int ageLimit) {
         this.name = name;

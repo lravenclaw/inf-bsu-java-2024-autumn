@@ -2,7 +2,6 @@ package by.solution.parser;
 
 import by.solution.data.Toy;
 
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -31,5 +30,13 @@ public class ToyParser {
         }
 
         return toys;
+    }
+
+    public static String toString(List<Toy> toys) {
+        StringBuilder str = new StringBuilder();
+        for (var toy : toys) {
+            str.append(toy.toString()).append("\n");
+        }
+        return str.toString();
     }
 }
