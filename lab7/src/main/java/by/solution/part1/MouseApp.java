@@ -22,10 +22,7 @@ public class MouseApp extends JFrame {
         add(btn);
 
         infoLabel = new JLabel("Координаты: (0, 0)");
-        //infoLabel.setBounds(10, getHeight() - 40, 200, 20);
         infoLabel.setSize(200,20);
-        //infoLabel.setVerticalAlignment(SwingConstants.BOTTOM);
-        //infoLabel.setHorizontalAlignment(SwingConstants.LEFT);
         add(infoLabel);
 
         addMouseMotionListener(new MouseMotionAdapter() {
@@ -78,6 +75,11 @@ public class MouseApp extends JFrame {
                     int y = btn.getY() + e.getY() - mouseOffset.y;
                     btn.setLocation(x, y);
                 }
+                updateLabel(e.getXOnScreen(), e.getYOnScreen());
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
                 updateLabel(e.getXOnScreen(), e.getYOnScreen());
             }
         });
