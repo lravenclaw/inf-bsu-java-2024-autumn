@@ -43,7 +43,10 @@ class PaintApp extends JFrame {
 
         saveItem.addActionListener(e -> saveImage());
         openItem.addActionListener(e -> openImage());
-        clearItem.addActionListener(e ->  {paintPanel.clear(); paintPanel.repaint();});
+        clearItem.addActionListener(e ->  {
+            paintPanel.clear();
+            paintPanel.repaint();
+        });
 
         fileMenu.add(saveItem);
         fileMenu.add(openItem);

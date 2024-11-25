@@ -29,7 +29,7 @@ public class PaintPanel extends JPanel {
                     points.add(new Pair<>(currentPoint, currentColor));
                 }
                 lastPoint = currentPoint;
-                repaint();
+                updatePanel();
             }
         });
 
@@ -60,6 +60,21 @@ public class PaintPanel extends JPanel {
             g.setColor(points.get(i).second);
             g.drawLine(p1.x, p1.y, p2.x, p2.y);
         }
+
+        g.dispose();
+    }
+
+    public void  updatePanel() {
+        Graphics g = getGraphics();
+        var size = points.size();
+        assert(size > 2);
+
+        Point p1 = points.get(size - 2).first;
+        Point p2 = points.get(size -1).first;
+        g.setColor(points.get(size - 1).second);
+        g.drawLine(p1.x, p1.y, p2.x, p2.y);
+
+        g.dispose();
     }
 
     public void setImage(BufferedImage img) {
