@@ -13,14 +13,19 @@ public class MouseApp extends JFrame {
         setTitle("Приложение с мышью");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         setLayout(null);
+
 
         btn = new JButton("Нажми меня");
         btn.setBounds(150, 125, 100, 50);
         add(btn);
 
         infoLabel = new JLabel("Координаты: (0, 0)");
-        infoLabel.setBounds(10, 230, 200, 20);
+        //infoLabel.setBounds(10, getHeight() - 40, 200, 20);
+        infoLabel.setSize(200,20);
+        //infoLabel.setVerticalAlignment(SwingConstants.BOTTOM);
+        //infoLabel.setHorizontalAlignment(SwingConstants.LEFT);
         add(infoLabel);
 
         addMouseMotionListener(new MouseMotionAdapter() {
@@ -50,6 +55,7 @@ public class MouseApp extends JFrame {
             }
         });
 
+
         btn.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -62,22 +68,12 @@ public class MouseApp extends JFrame {
             public void mouseReleased(MouseEvent e) {
                 mouseOffset = null;
             }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    String input = JOptionPane.showInputDialog(MouseApp.this, "Введите текст для кнопки:", btn.getText());
-                    if (input != null && !input.isEmpty()) {
-                        btn.setText(input);
-                    }
-                }
-            }
         });
 
         btn.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (mouseOffset != null) {
+                if (mouseOffset != null && (e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) {
                     int x = btn.getX() + e.getX() - mouseOffset.x;
                     int y = btn.getY() + e.getY() - mouseOffset.y;
                     btn.setLocation(x, y);
@@ -89,7 +85,17 @@ public class MouseApp extends JFrame {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                btn.setText(btn.getText() + e.getKeyChar());
+                if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
+                    String text = btn.getText();
+                    if (!text.isEmpty()){
+                        text = text.substring(0, text.length() - 1);
+                        btn.setText(text);
+                    }
+                }else{
+                    String text = btn.getText();
+                    text = String.valueOf(text + e.getKeyChar());
+                    btn.setText(text);
+                }
             }
 
             @Override
