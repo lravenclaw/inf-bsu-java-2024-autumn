@@ -1,15 +1,13 @@
 package by.solution.app;
 
-import by.solution.Pair;
-
 import javax.swing.*;
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.awt.event.*;
 
 
 class PaintApp extends JFrame {
@@ -18,11 +16,19 @@ class PaintApp extends JFrame {
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        drawingPanel = new DrawingPanel();
-        JScrollPane scrollPane = new JScrollPane(drawingPanel);
+        paintPanel = new PaintPanel();
+        paintPanel.setBackgroundColor(Color.WHITE);
+        JScrollPane scrollPane = new JScrollPane(paintPanel);
         add(scrollPane, BorderLayout.CENTER);
 
         createMenuBar();
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                paintPanel.repaint();
+            }
+        });
 
         setVisible(true);
     }
@@ -47,10 +53,10 @@ class PaintApp extends JFrame {
         JMenuItem greenColor = new JMenuItem("Зеленый");
         JMenuItem blackColor = new JMenuItem("Чёрный");
 
-        blueColor.addActionListener(e -> currentColor = Color.BLUE);
-        redColor.addActionListener(e -> currentColor = Color.RED);
-        greenColor.addActionListener(e -> currentColor = Color.GREEN);
-        blackColor.addActionListener(e -> currentColor = Color.BLACK);
+        blueColor.addActionListener(e -> paintPanel.setCurrentColor(Color.BLUE));
+        redColor.addActionListener(e -> paintPanel.setCurrentColor(Color.RED));
+        greenColor.addActionListener(e -> paintPanel.setCurrentColor(Color.GREEN));
+        blackColor.addActionListener(e -> paintPanel.setCurrentColor(Color.BLACK));
 
         colorMenu.add(blueColor);
         colorMenu.add(redColor);
@@ -72,9 +78,9 @@ class PaintApp extends JFrame {
         }
 
         File file = fileChooser.getSelectedFile();
-        BufferedImage image = new BufferedImage(drawingPanel.getWidth(), drawingPanel.getHeight(), BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(paintPanel.getWidth(), paintPanel.getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = image.createGraphics();
-        drawingPanel.paint(g2d);
+        paintPanel.paint(g2d);
         g2d.dispose();
 
         try {
@@ -102,7 +108,7 @@ class PaintApp extends JFrame {
 
         try {
             BufferedImage image = ImageIO.read(file);
-            drawingPanel.setImage(image);
+            paintPanel.setImage(image);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Ошибка открытия изображения: " + ex.getMessage());
         }
@@ -123,64 +129,7 @@ class PaintApp extends JFrame {
         return true;
     }
 
-    public class DrawingPanel extends JPanel {
-        private BufferedImage image;
-        private ArrayList<Pair<Point, Color>> points = new ArrayList<>();
-
-        public DrawingPanel() {
-            setPreferredSize(new Dimension(800, 500));
-            setBackground(backgroundColor);
-            addMouseMotionListener(new MouseAdapter() {
-                @Override
-                public void mouseDragged(MouseEvent e) {
-                    points.add(new Pair<>(new Point(e.getX(), e.getY()), currentColor));
-    ;               updatePanel();
-                }
-            });
-
-            addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    points.add(new Pair<>(new Point(e.getX(), e.getY()), currentColor));
-                    updatePanel();
-                }
-            });
-        }
-
-        @Override
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
-
-            if (image != null) {
-                g.drawImage(image, 0, 0, getWidth(), getHeight(), null);  // Увеличиваем изображение до размеров панели
-            }
-        }
-
-        public void setImage(BufferedImage img) {
-            this.image = img;
-            points.clear();
-            updatePanel();
-        }
-
-        private void updatePanel() {
-            Graphics g = getGraphics();
-
-            if (g == null) {
-                return;
-            }
-            g.drawImage(image, 0, 0, null);
-
-            for (Pair<Point, Color> p : points) {
-                g.setColor(p.second);
-                g.fillOval(p.first.x, p.first.y, 5, 5);
-                g.drawOval(p.first.x, p.first.y, 5, 5);
-            }
-
-            g.dispose();
-        }
-    }
-
-    private DrawingPanel drawingPanel;
+    private PaintPanel paintPanel;
     private Color currentColor = Color.BLACK;
     private Color backgroundColor = Color.WHITE;
 }
