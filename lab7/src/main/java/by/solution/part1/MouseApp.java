@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class MouseApp extends JFrame {
-    private JButton btn;
+    private JButton button;
     private JLabel infoLabel;
     private Point mouseOffset;
 
@@ -17,9 +17,9 @@ public class MouseApp extends JFrame {
         setLayout(null);
 
 
-        btn = new JButton("Нажми меня");
-        btn.setBounds(150, 125, 100, 50);
-        add(btn);
+        button = new JButton("F");
+        button.setBounds(150, 125, 100, 50);
+        add(button);
 
         infoLabel = new JLabel("Координаты: (0, 0)");
         infoLabel.setSize(200,20);
@@ -40,25 +40,26 @@ public class MouseApp extends JFrame {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int x = e.getX() - btn.getWidth() / 2;
-                int y = e.getY() - btn.getHeight() / 2;
+                int x = e.getX() - button.getWidth() / 2;
+                int y = e.getY() - button.getHeight() / 2;
 
                 if (x < 0) x = 0;
                 if (y < 0) y = 0;
-                if (x + btn.getWidth() > getWidth()) x = getWidth() - btn.getWidth();
-                if (y + btn.getHeight() > getHeight()) y = getHeight() - btn.getHeight();
+                if (x + button.getWidth() > getWidth()) x = getWidth() - button.getWidth();
+                if (y + button.getHeight() > getHeight()) y = getHeight() - button.getHeight();
 
-                btn.setLocation(x, y);
+                button.setLocation(x, y);
             }
         });
 
 
-        btn.addMouseListener(new MouseAdapter() {
+        button.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
                     mouseOffset = e.getPoint();
                 }
+                button.requestFocusInWindow();
             }
 
             @Override
@@ -67,13 +68,13 @@ public class MouseApp extends JFrame {
             }
         });
 
-        btn.addMouseMotionListener(new MouseMotionAdapter() {
+        button.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (mouseOffset != null && (e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) {
-                    int x = btn.getX() + e.getX() - mouseOffset.x;
-                    int y = btn.getY() + e.getY() - mouseOffset.y;
-                    btn.setLocation(x, y);
+                    int x = button.getX() + e.getX() - mouseOffset.x;
+                    int y = button.getY() + e.getY() - mouseOffset.y;
+                    button.setLocation(x, y);
                 }
                 updateLabel(e.getXOnScreen(), e.getYOnScreen());
             }
@@ -86,32 +87,21 @@ public class MouseApp extends JFrame {
 
         addKeyListener(new KeyAdapter() {
             @Override
-            public void keyTyped(KeyEvent e) {
+            public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
-                    String text = btn.getText();
+                    String text = button.getText();
                     if (!text.isEmpty()){
                         text = text.substring(0, text.length() - 1);
-                        btn.setText(text);
+                        button.setText(text);
                     }
-                }else{
-                    String text = btn.getText();
-                    text = String.valueOf(text + e.getKeyChar());
-                    btn.setText(text);
-                }
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-                    String text = btn.getText();
-                    if (text.length() > 0) {
-                        btn.setText(text.substring(0, text.length() - 1));
-                    }
+                } else if (Character.isLetterOrDigit(e.getKeyChar()) || e.getKeyChar() == ' ') {
+                    button.setText(button.getText() + e.getKeyChar());
                 }
             }
         });
 
-        setFocusable(true);
+        button.setFocusable(false);
+        requestFocusInWindow();
         setVisible(true);
     }
 
