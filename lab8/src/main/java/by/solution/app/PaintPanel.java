@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 public class PaintPanel extends JPanel {
     private BufferedImage image;
-    private Pair<Point, Color> currentPoint = null;
     private ArrayList<Pair<Point, Color>> points = new ArrayList<>();
+    private Point lastPoint = null;
 
     private Color backgroundColor = Color.WHITE;
     private Color currentColor = Color.BLACK;
@@ -23,16 +23,25 @@ public class PaintPanel extends JPanel {
         addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                currentPoint = new Pair<>(new Point(e.getX(), e.getY()), currentColor);
-                updatePanel();
+                Point currentPoint = new Point(e.getX(), e.getY());
+                if (lastPoint != null) {
+                    points.add(new Pair<>(lastPoint, currentColor));
+                    points.add(new Pair<>(currentPoint, currentColor));
+                }
+                lastPoint = currentPoint;
+                repaint();
             }
         });
 
         addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                currentPoint = new Pair<>(new Point(e.getX(), e.getY()), currentColor);
-                updatePanel();
+            public void mousePressed(MouseEvent e) {
+                lastPoint = new Point(e.getX(), e.getY());
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                lastPoint = null;
             }
         });
     }
@@ -42,33 +51,21 @@ public class PaintPanel extends JPanel {
         super.paintComponent(g);
 
         if (image != null) {
-            g.drawImage(image, 0, 0, getWidth(), getHeight(), null);  // Увеличиваем изображение до размеров панели
+            g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
         }
 
-        for (var p : points) {
-            g.setColor(p.second);
-            g.fillOval(p.first.x, p.first.y, 5, 5);
-            g.drawOval(p.first.x, p.first.y, 5, 5);
+        for (int i = 1; i < points.size(); i += 2) {
+            Point p1 = points.get(i - 1).first;
+            Point p2 = points.get(i).first;
+            g.setColor(points.get(i).second);
+            g.drawLine(p1.x, p1.y, p2.x, p2.y);
         }
     }
 
     public void setImage(BufferedImage img) {
         this.image = img;
         points.clear();
-        updatePanel();
-    }
-
-    private void updatePanel() {
-        Graphics g = getGraphics();
-        if (g == null) {
-            return;
-        }
-
-        g.setColor(currentPoint.second);
-        g.fillOval(currentPoint.first.x, currentPoint.first.y, 5, 5);
-        g.drawOval(currentPoint.first.x, currentPoint.first.y, 5, 5);
-        points.add(currentPoint);
-        //g.dispose();
+        repaint();
     }
 
     public void setBackgroundColor(Color backgroundColor) {
@@ -77,5 +74,10 @@ public class PaintPanel extends JPanel {
 
     public void setCurrentColor(Color currentColor) {
         this.currentColor = currentColor;
+    }
+
+    public void clear() {
+        image = null;
+        points.clear();
     }
 }

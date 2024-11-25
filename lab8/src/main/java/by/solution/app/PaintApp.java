@@ -39,12 +39,15 @@ class PaintApp extends JFrame {
         JMenu fileMenu = new JMenu("Файл");
         JMenuItem saveItem = new JMenuItem("Сохранить");
         JMenuItem openItem = new JMenuItem("Открыть");
+        JMenuItem clearItem = new JMenuItem("Oчистить");
 
         saveItem.addActionListener(e -> saveImage());
         openItem.addActionListener(e -> openImage());
+        clearItem.addActionListener(e ->  {paintPanel.clear(); paintPanel.repaint();});
 
         fileMenu.add(saveItem);
         fileMenu.add(openItem);
+        fileMenu.add(clearItem);
 
         JMenu penMenu = new JMenu("Перо");
         JMenu colorMenu = new JMenu("Цвет");
