@@ -17,7 +17,7 @@ public class MouseApp extends JFrame {
         setLayout(null);
 
 
-        button = new JButton("F");
+        button = new JButton("Enter text");
         button.setBounds(150, 125, 100, 50);
         add(button);
 
@@ -100,6 +100,13 @@ public class MouseApp extends JFrame {
             }
         });
 
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                updateLabelPosition();
+            }
+        });
+
         button.setFocusable(false);
         requestFocusInWindow();
         setVisible(true);
@@ -107,6 +114,10 @@ public class MouseApp extends JFrame {
 
     private void updateLabel(int x, int y) {
         infoLabel.setText("Координаты: (" + x + ", " + y + ")");
+    }
+
+    private void updateLabelPosition() {
+        infoLabel.setLocation(10, getHeight() - infoLabel.getHeight() - 20);
     }
 
     public static void main(String[] args) {
