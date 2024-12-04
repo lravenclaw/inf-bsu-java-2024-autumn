@@ -80,8 +80,8 @@ public class CalcAppFrame extends JFrame implements ActionListener{
 
         try {
             JFileChooser fileChooser = new JFileChooser();
-            int dialog_window_choose = fileChooser.showOpenDialog(this);
-            if (dialog_window_choose == JFileChooser.APPROVE_OPTION) {
+            int showOpenDialog = fileChooser.showOpenDialog(this);
+            if (showOpenDialog == JFileChooser.APPROVE_OPTION) {
                 file = fileChooser.getSelectedFile();
             }
         } catch (RuntimeException e) {
