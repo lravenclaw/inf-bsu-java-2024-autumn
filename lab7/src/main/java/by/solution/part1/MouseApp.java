@@ -24,6 +24,7 @@ public class MouseApp extends JFrame {
         infoLabel = new JLabel("Координаты: (0, 0)");
         infoLabel.setSize(200,20);
         add(infoLabel);
+        updateLabelPosition();
 
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -117,7 +118,7 @@ public class MouseApp extends JFrame {
     }
 
     private void updateLabelPosition() {
-        infoLabel.setLocation(10, getHeight() - infoLabel.getHeight() - 20);
+        infoLabel.setLocation(10, getHeight() - infoLabel.getHeight() - 40);
     }
 
     public static void main(String[] args) {
