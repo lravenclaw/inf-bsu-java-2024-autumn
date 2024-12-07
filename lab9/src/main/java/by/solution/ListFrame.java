@@ -26,11 +26,10 @@ public class ListFrame extends JFrame {
         list1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         list2.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-        // Создание кнопок
+
         leftToRight = new JButton(">");
         rightToLeft = new JButton("<");
 
-        // Обработчики событий для кнопок
         leftToRight.addActionListener(e -> {
             List<String> selectedValues = list1.getSelectedValuesList();
             for (String value : selectedValues) {
@@ -47,31 +46,25 @@ public class ListFrame extends JFrame {
             }
         });
 
-        // Установка макета
         setLayout(new BorderLayout());
 
-        // Создание панели для первого списка с фиксированной шириной
         JPanel leftPanel = new JPanel(new BorderLayout());
         leftPanel.add(new JScrollPane(list1), BorderLayout.CENTER);
-        leftPanel.setPreferredSize(new Dimension(200, 0)); // Устанавливаем ширину 200 пикселей
+        leftPanel.setPreferredSize(new Dimension(200, 0));
 
-        // Создание панели для второго списка с фиксированной шириной
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.add(new JScrollPane(list2), BorderLayout.CENTER);
-        rightPanel.setPreferredSize(new Dimension(200, 0)); // Устанавливаем ширину 200 пикселей
+        rightPanel.setPreferredSize(new Dimension(200, 0));
 
-        // Панель для кнопок
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(3, 1, 0, 10)); // Добавляем вертикальный промежуток (10 пикселей)
+        buttonPanel.setLayout(new GridLayout(3, 1, 0, 10));
 
         buttonPanel.add(leftToRight);
 
-        // Пустая панель для создания пространства между кнопками
-        buttonPanel.add(Box.createVerticalStrut(10)); // Промежуток в 10 пикселей
+        buttonPanel.add(Box.createVerticalStrut(10));
 
         buttonPanel.add(rightToLeft);
 
-        // Добавление панелей в окно
         add(leftPanel, BorderLayout.WEST);
         add(rightPanel, BorderLayout.EAST);
         add(buttonPanel, BorderLayout.CENTER);

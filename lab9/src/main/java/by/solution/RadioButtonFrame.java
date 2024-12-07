@@ -37,10 +37,10 @@ public class RadioButtonFrame extends JFrame {
         button.setSelectedIcon(iconSelected);
         button.setIcon(iconNotSelected);
         button.setPressedIcon(iconPressed);
-        button.setIconTextGap(10); // Adjust gap between icon and text
+        button.setIconTextGap(10);
         button.setPreferredSize(new Dimension(
-                iconSelected.getIconWidth() + 50, // Adjust width as needed
-                iconSelected.getIconHeight() + 20 // Adjust height as needed
+                iconSelected.getIconWidth() + 50,
+                iconSelected.getIconHeight() + 20
         ));
         return button;
     }
