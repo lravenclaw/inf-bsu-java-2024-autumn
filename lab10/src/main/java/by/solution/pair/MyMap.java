@@ -42,6 +42,10 @@ public class MyMap<K, V> implements Aggregate<MyMap.Entry<K, V>> {
             return Objects.equals(p.getKey(), key) && Objects.equals(p.getValue(), value);
         }
 
+        public String toString() {
+            return "(" + key + ", " + value + ")";
+        }
+
         public static <A, B> Entry<A, B> create(A a, B b) {
             return new Entry<A, B>(a, b);
         }
@@ -80,7 +84,7 @@ public class MyMap<K, V> implements Aggregate<MyMap.Entry<K, V>> {
         while (!iterator.isDone()) {
             Entry<K, V> entry = iterator.currentItem();
             iterator.next();
-            sb.append("Entry{key=").append(entry.getKey()).append(", value=").append(entry.getValue()).append("}");
+            sb.append(entry.toString());
             if (iterator.isDone()) {
                 sb.append(", ");
             }
