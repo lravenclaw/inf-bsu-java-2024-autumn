@@ -51,7 +51,7 @@ public class PaintPanel extends JPanel {
         super.paintComponent(g);
 
         if (image != null) {
-            g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+            g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
         }
 
         for (int i = 1; i < points.size(); i += 2) {
@@ -67,7 +67,10 @@ public class PaintPanel extends JPanel {
     public void  updatePanel() {
         Graphics g = getGraphics();
         var size = points.size();
-        assert(size > 2);
+
+        if (size < 2) {
+            return;
+        }
 
         Point p1 = points.get(size - 2).first;
         Point p2 = points.get(size -1).first;

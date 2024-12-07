@@ -26,7 +26,7 @@ class PaintApp extends JFrame {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                paintPanel.repaint();
+                paintPanel.updatePanel();
             }
         });
 
