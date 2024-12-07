@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ToyManagerApp extends JFrame {
     private JTextArea displayAreaBefore;
@@ -136,7 +137,7 @@ public class ToyManagerApp extends JFrame {
         String input = JOptionPane.showInputDialog(ToyManagerApp.this, "Введите возраст:");
         if (input != null && !input.isEmpty()) {
             try {
-                toysAfter = getToysFromAge(toys, Integer.parseInt(input));
+                toysAfter = getToysFromAgeStreamAPI(toys, Integer.parseInt(input));
                 displayAreaAfter.setText(ToyParser.toString(toysAfter));
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Ошибка при чтении данных", "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -144,6 +145,12 @@ public class ToyManagerApp extends JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Нет данных для чтения", "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private static List<Toy> getToysFromAgeStreamAPI(List<Toy> toys, int age) {
+        return toys.stream()
+                .filter(toy -> age >= toy.ageLimit)
+                .collect(Collectors.toList());
     }
 
     private static List<Toy> getToysFromAge(List<Toy> toys, int age) {
@@ -160,7 +167,7 @@ public class ToyManagerApp extends JFrame {
         String input = JOptionPane.showInputDialog(ToyManagerApp.this, "Введите cуммарную стоимость:");
         if (input != null && !input.isEmpty()) {
             try {
-                toysAfter = getToysWithTotalPrice(toys, Double.parseDouble(input));
+                toysAfter = getToysWithTotalPriceStreamAPI(toys, Double.parseDouble(input));
                 displayAreaAfter.setText(ToyParser.toString(toysAfter));
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Ошибка при чтении данных", "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -168,6 +175,25 @@ public class ToyManagerApp extends JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Нет данных для чтения", "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private static List<Toy> getToysWithTotalPriceStreamAPI(List<Toy> toys, double totalSum) {
+        List<Toy> result = new ArrayList<>();
+        double[] currentSum = {0.0};
+
+        toys.stream()
+                .sorted(Comparator.comparingDouble(toy -> toy.price))
+                .takeWhile(toy -> {
+                    if (currentSum[0] + toy.price <= totalSum) {
+                        currentSum[0] += toy.price;
+                        result.add(toy);
+                        return true;
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
+
+        return result;
     }
 
     private static List<Toy> getToysWithTotalPrice(List<Toy> toys, double totalSum) {
