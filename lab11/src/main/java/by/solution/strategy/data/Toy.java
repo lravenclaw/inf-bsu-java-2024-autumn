@@ -4,10 +4,10 @@ import java.util.Comparator;
 
 public class Toy {
     public String name;
-    public double price;
+    public int price;
     public int ageLimit;
 
-    public Toy(String name, double price, int ageLimit) {
+    public Toy(String name, int price, int ageLimit) {
         this.name = name;
         this.price = price;
         this.ageLimit = ageLimit;

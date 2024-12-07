@@ -1,8 +1,11 @@
 package by.solution.strategy.app;
 
 import by.solution.strategy.Strategy;
+import by.solution.strategy.age.StreamAPIAgeStrategy;
 import by.solution.strategy.data.Toy;
 import by.solution.strategy.parser.ToyParser;
+import by.solution.strategy.price.DefaultPriceStrategy;
+import by.solution.strategy.price.StreamAPIPriceStrategy;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,21 +14,22 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ToyManagerApp extends JFrame {
     private JTextArea displayAreaBefore;
     private JTextArea displayAreaAfter;
     private List<Toy> toys;
     private List<Toy> toysAfter;
-    private Strategy sortStrategy;
+
+    private Strategy<Toy> ageStrategy;
+    private Strategy<Toy> priceStrategy;
 
     public ToyManagerApp() {
         setTitle("Toy Manager");
         setSize(800, 1000);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         toys = new ArrayList<>();
-
-        sortStrategy = new by.solution.strategy.DefaultStrategy();
 
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("Файл");
@@ -94,6 +98,9 @@ public class ToyManagerApp extends JFrame {
 
         add(new JScrollPane(displayAreaBefore), BorderLayout.WEST);
         add(new JScrollPane(displayAreaAfter), BorderLayout.EAST);
+
+        ageStrategy = new StreamAPIAgeStrategy();
+        priceStrategy = new DefaultPriceStrategy();
     }
 
     private class FontSizeActionListener implements ActionListener {
@@ -132,7 +139,7 @@ public class ToyManagerApp extends JFrame {
     }
 
     private void sortToys(Comparator<Toy> comparator) {
-        toysAfter = sortStrategy.sort(toysAfter, comparator);
+        toysAfter.sort(comparator);
         displayAreaAfter.setText(ToyParser.toString(toysAfter));
     }
 
@@ -140,7 +147,7 @@ public class ToyManagerApp extends JFrame {
         String input = JOptionPane.showInputDialog(ToyManagerApp.this, "Введите возраст:");
         if (input != null && !input.isEmpty()) {
             try {
-                toysAfter = getToysFromAge(toys, Integer.parseInt(input));
+                toysAfter = ageStrategy.process(toys, Integer.parseInt(input));
                 displayAreaAfter.setText(ToyParser.toString(toysAfter));
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Ошибка при чтении данных", "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -148,23 +155,13 @@ public class ToyManagerApp extends JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Нет данных для чтения", "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    private static List<Toy> getToysFromAge(List<Toy> toys, int age) {
-        ArrayList<Toy> result = new ArrayList<>();
-        for (var toy : toys) {
-            if (age >= toy.ageLimit) {
-                result.add(toy);
-            }
-        }
-        return result;
     }
 
     private void toysWithPrice() {
         String input = JOptionPane.showInputDialog(ToyManagerApp.this, "Введите cуммарную стоимость:");
         if (input != null && !input.isEmpty()) {
             try {
-                toysAfter = getToysWithTotalPrice(toys, Double.parseDouble(input));
+                toysAfter = priceStrategy.process(toys, Integer.parseInt(input));
                 displayAreaAfter.setText(ToyParser.toString(toysAfter));
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Ошибка при чтении данных", "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -173,32 +170,4 @@ public class ToyManagerApp extends JFrame {
             JOptionPane.showMessageDialog(this, "Нет данных для чтения", "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-    private static List<Toy> getToysWithTotalPrice(List<Toy> toys, double totalSum) {
-        ArrayList<Toy> result = new ArrayList<>();
-
-        TreeSet<Integer> used = new TreeSet<>();
-        double currentSum = 0.;
-        boolean full = false;
-
-        while (!(full ||toys.isEmpty())) {
-            Random random = new Random();
-            Integer index = random.nextInt(toys.size());
-            if (used.contains(index)) {
-                continue;
-            }
-
-            var currentToy = toys.get(index);
-            if (currentSum + currentToy.price - totalSum >= 1e-6) {
-                full = true;
-                continue;
-            }
-
-            used.add(index);
-            result.add(currentToy);
-            currentSum += currentToy.price;
-        }
-        return result;
-    }
-
 }

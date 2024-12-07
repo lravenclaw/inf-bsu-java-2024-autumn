@@ -21,7 +21,7 @@ public class ToyParser {
                     throw new RuntimeException("Error input file format! Can't read from file.");
                 }
 
-                Toy toy = new Toy(parts[0], Double.parseDouble(parts[1]), Integer.parseInt(parts[2]));
+                Toy toy = new Toy(parts[0], Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
 
                 toys.add(toy);
             }
