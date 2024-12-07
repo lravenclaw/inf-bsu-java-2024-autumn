@@ -1,5 +1,6 @@
 package by.solution.pair;
 
+import by.solution.Aggregate;
 import by.solution.Iterator;
 
 import javax.swing.*;
@@ -9,7 +10,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.NoSuchElementException;
 
-public class MyMap<K, V> {
+public class MyMap<K, V> implements Aggregate<MyMap.Entry<K, V>> {
+    @Override
+    public Iterator<MyMap.Entry<K, V>> createIterator() {
+        return new PairIterator();
+    }
+
     static public class Entry<F, S> {
         private final F key;
         private final S value;
@@ -70,7 +76,7 @@ public class MyMap<K, V> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("[");
-        Iterator<Entry<K, V>> iterator = iterator();
+        Iterator<Entry<K, V>> iterator = createIterator();
         while (!iterator.isDone()) {
             Entry<K, V> entry = iterator.currentItem();
             iterator.next();
@@ -91,10 +97,8 @@ public class MyMap<K, V> {
 
     private class PairIterator implements Iterator<Entry<K, V>> {
         private int index;
-        private final MyMap<K, V> container;
 
-        public PairIterator(MyMap<K, V> container) {
-            this.container = container;
+        public PairIterator() {
             this.index = 0;
         }
 
@@ -105,7 +109,7 @@ public class MyMap<K, V> {
 
         @Override
         public boolean isDone() {
-            return index >= container.size();
+            return index >= elements.size();
         }
 
         @Override
@@ -118,12 +122,8 @@ public class MyMap<K, V> {
 
         @Override
         public Entry<K, V> currentItem() {
-            return (Entry<K, V>) container.elements.get(index);
+            return (Entry<K, V>) elements.get(index);
         }
-    }
-
-    public Iterator<Entry<K, V>> iterator() {
-        return new PairIterator(this);
     }
 
     public Optional<V> get(K key) {

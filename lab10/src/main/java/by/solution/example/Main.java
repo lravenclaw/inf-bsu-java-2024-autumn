@@ -12,7 +12,7 @@ public class Main {
         myMap.put("Four", 4);
         myMap.put("Five", 5);
 
-        Iterator<MyMap.Entry<String, Integer>> iterator = myMap.iterator();
+        Iterator<MyMap.Entry<String, Integer>> iterator = myMap.createIterator();
         System.out.println("Iterating over MyMap entries:");
         while (!iterator.isDone()) {
             MyMap.Entry<String, Integer> entry = iterator.currentItem();

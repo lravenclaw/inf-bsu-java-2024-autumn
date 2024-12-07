@@ -47,16 +47,14 @@ public class SingleElementContainer<T> implements Iterable<T> {
 
     private class SingleIterator implements Iterator<T> {
         private int index;
-        private final SingleElementContainer<T> container;
 
-        public SingleIterator(SingleElementContainer<T> container) {
-            this.container = container;
+        public SingleIterator() {
             this.index = 0;
         }
 
         @Override
         public boolean hasNext() {
-            return index < container.size();
+            return index < elements.size();
         }
 
         @Override
@@ -64,13 +62,13 @@ public class SingleElementContainer<T> implements Iterable<T> {
             if (!hasNext()) {
                 throw new NoSuchElementException("No more elements");
             }
-            return (T) container.elements.get(index++);
+            return (T) elements.get(index++);
         }
     }
 
     @Override
     public Iterator<T> iterator() {
-        return new SingleIterator(this);
+        return new SingleIterator();
     }
 
     @Override
