@@ -25,6 +25,10 @@ class RoundedButton extends JButton {
         super.paintComponent(g);
         g2.dispose();
     }
+
+    @Override
+    protected void paintBorder(Graphics g) {
+    }
 }
 
 public class View extends JFrame {
