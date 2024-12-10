@@ -1,7 +1,7 @@
-package by.solution.view;
+package by.solution.view_pattern;
 
-import by.solution.controller.MapController;
-import by.solution.model.MapModel;
+import by.solution.map_controller.MapController;
+import by.solution.model_map.MapModel;
 
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;

@@ -1,6 +1,6 @@
 package by.solution.app;
 
-import by.solution.view.View;
+import by.solution.view_pattern.View;
 
 import java.awt.*;
 

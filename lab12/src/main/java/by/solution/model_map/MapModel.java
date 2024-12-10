@@ -1,9 +1,9 @@
-package by.solution.model;
+package by.solution.model_map;
 
-import by.solution.iterator.Aggregate;
-import by.solution.iterator.Iterator;
-import by.solution.visitor.Element;
-import by.solution.visitor.Visitor;
+import by.solution.iterator_pair_pattern.Aggregate;
+import by.solution.iterator_pair_pattern.Iterator;
+import by.solution.visitor_pattern.Element;
+import by.solution.visitor_pattern.Visitor;
 import javax.swing.*;
 import java.util.*;
 

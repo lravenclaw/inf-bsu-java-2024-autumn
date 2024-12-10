@@ -1,10 +1,10 @@
-package by.solution.controller;
+package by.solution.map_controller;
 
-import by.solution.model.MapModel;
-import by.solution.view.View;
-import by.solution.visitor.DifferenceVisitor;
-import by.solution.visitor.IntersectionVisitor;
-import by.solution.visitor.UnionVisitor;
+import by.solution.model_map.MapModel;
+import by.solution.view_pattern.View;
+import by.solution.visitor_pattern.DifferenceMapVisitor;
+import by.solution.visitor_pattern.IntersectionMapVisitor;
+import by.solution.visitor_pattern.UnionMapVisitor;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -31,19 +31,19 @@ public class MapController {
         this.view.getRemoveButton().addActionListener(e -> removeSelectedElementsFromMap());
 
         this.view.getUniteButton().addActionListener(e -> {
-            UnionVisitor<String, String> unionVisitor = new UnionVisitor<>(map1);
+            UnionMapVisitor<String, String> unionVisitor = new UnionMapVisitor<>(map1);
             map2.accept(unionVisitor);
             this.view.updateMapDisplay(unionVisitor.getResult());
         });
 
         this.view.getIntersectButton().addActionListener(e -> {
-            IntersectionVisitor<String, String> intersectionVisitor = new IntersectionVisitor<>(map1);
+            IntersectionMapVisitor<String, String> intersectionVisitor = new IntersectionMapVisitor<>(map1);
             map2.accept(intersectionVisitor);
             this.view.updateMapDisplay(intersectionVisitor.getResult());
         });
 
         this.view.getDifferenceABButton().addActionListener(e -> {
-            DifferenceVisitor<String, String> differenceVisitor = new DifferenceVisitor<>(map1);
+            DifferenceMapVisitor<String, String> differenceVisitor = new DifferenceMapVisitor<>(map1);
             map2.accept(differenceVisitor);
             this.view.updateMapDisplay(differenceVisitor.getResult());
         });
