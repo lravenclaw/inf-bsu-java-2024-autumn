@@ -1,22 +1,16 @@
-package by.solution.map_controller;
-
-import by.solution.model_map.MapModel;
-import by.solution.view_pattern.View;
-import by.solution.visitor_pattern.DifferenceMapVisitor;
-import by.solution.visitor_pattern.IntersectionMapVisitor;
-import by.solution.visitor_pattern.UnionMapVisitor;
+package by.solution.controller;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.util.List;
 
-public class MapController {
+public class Controller {
     private final MapModel<String, String> map1;
     private final MapModel<String, String> map2;
     private final View view;
 
-    public MapController(MapModel<String, String> map1, MapModel<String, String> map2, View view) {
+    public Controller(MapModel<String, String> map1, MapModel<String, String> map2, View view) {
         this.map1 = map1;
         this.map2 = map2;
         this.view = view;

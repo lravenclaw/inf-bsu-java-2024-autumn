@@ -1,5 +1,5 @@
 package by.solution.itarator;
 
-public interface Aggregate <T>{
+public interface Aggregate<T> {
     Iterator<T> createIterator();
 }
