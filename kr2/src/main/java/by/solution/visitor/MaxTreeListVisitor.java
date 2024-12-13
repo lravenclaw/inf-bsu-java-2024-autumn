@@ -7,14 +7,13 @@ import java.util.List;
 
 public class MaxTreeListVisitor<T extends Comparable<T>>
         extends AbstractTreeVisitor<T> implements Visitor<T> {
-    private ArrayList<T> result;
+    private T result;
 
     public MaxTreeListVisitor(TreeList<T> tree) {
         this.tree = tree;
-        this.result = new ArrayList<>();
     }
 
-    public List<T> getResult() {
+    public T max() {
         return this.result;
     }
 
@@ -24,8 +23,7 @@ public class MaxTreeListVisitor<T extends Comparable<T>>
             return;
         }
 
-        T maxElement = findMax(1);
-        result.add(maxElement);
+        result = findMax(1);
     }
 
     private T findMax(int index) {

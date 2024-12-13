@@ -1,9 +1,11 @@
 package by.solution.controller;
 
 import by.solution.model.TreeList;
+import by.solution.strategy.DefaultMaxStrategy;
+import by.solution.strategy.StreamApiMaxStrategy;
+import by.solution.strategy.Strategy;
 import by.solution.view.View;
 import by.solution.visitor.MaxPathTreeListVisitor;
-import by.solution.visitor.MaxTreeListVisitor;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -16,10 +18,12 @@ import java.util.stream.Collectors;
 public class Controller {
     private final TreeList<Integer> tree;
     private final View view;
+    private Strategy<Integer> maxStrategy;
 
     public Controller(TreeList<Integer> tree, View view) {
         this.tree = tree;
         this.view = view;
+        this.maxStrategy = new DefaultMaxStrategy<>(); // Default strategy
         initController();
     }
 
@@ -30,6 +34,8 @@ public class Controller {
         this.view.getDisplayMaxMenuItem().addActionListener(e -> displayMaxElement());
         this.view.getDisplayMaxPathMenuItem().addActionListener(e -> displayPathToMax());
         this.view.getDisplayPreOrderMenuItem().addActionListener(e -> displayPreOrderTraversal());
+        this.view.getDefaultMaxStrategyMenuItem().addActionListener(e -> setDefaultMaxStrategy());
+        this.view.getStreamApiMaxStrategyMenuItem().addActionListener(e -> setStreamApiMaxStrategy());
     }
 
     private void addElementToTree() {
@@ -84,16 +90,14 @@ public class Controller {
     }
 
     private void displayMaxElement() {
-        MaxTreeListVisitor<Integer> maxVisitor = new MaxTreeListVisitor<>(tree);
-        tree.accept(maxVisitor);
-        Integer maxElement = maxVisitor.getResult().get(0);
+        Integer maxElement = maxStrategy.process(tree);
         this.view.updateMaxDisplay(maxElement.toString());
     }
 
     private void displayPathToMax() {
         MaxPathTreeListVisitor<Integer> maxPathVisitor = new MaxPathTreeListVisitor<>(tree);
         tree.accept(maxPathVisitor);
-        List<Integer> path = maxPathVisitor.getResult();
+        List<Integer> path = maxPathVisitor.moveToMax();
         String pathString = path.stream().map(String::valueOf).collect(Collectors.joining(" - "));
         this.view.updatePathDisplay(pathString);
     }
@@ -101,5 +105,15 @@ public class Controller {
     private void displayPreOrderTraversal() {
         List<Integer> preOrder = tree.preOrderTraversal();
         this.view.updatePreOrderDisplay(preOrder.toString());
+    }
+
+    private void setDefaultMaxStrategy() {
+        this.maxStrategy = new DefaultMaxStrategy<>();
+        JOptionPane.showMessageDialog(view, "Max strategy set to Default Strategy.");
+    }
+
+    private void setStreamApiMaxStrategy() {
+        this.maxStrategy = new StreamApiMaxStrategy<>();
+        JOptionPane.showMessageDialog(view, "Max strategy set to Stream API Strategy.");
     }
 }

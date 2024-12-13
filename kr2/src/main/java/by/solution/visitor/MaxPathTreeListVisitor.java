@@ -12,7 +12,7 @@ public class MaxPathTreeListVisitor<T extends Comparable<T>> extends AbstractTre
         this.result = new ArrayList<>();
     }
 
-    public List<T> getResult() {
+    public List<T> moveToMax() {
         return this.result;
     }
 

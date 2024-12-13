@@ -12,6 +12,8 @@ public class View extends JFrame {
     private final JMenuItem displayMaxMenuItem;
     private final JMenuItem displayMaxPathMenuItem;
     private final JMenuItem displayPreOrderMenuItem;
+    private final JMenuItem defaultMaxStrategyMenuItem;
+    private final JMenuItem streamApiMaxStrategyMenuItem;
 
     public View(String title) {
         super(title);
@@ -40,6 +42,13 @@ public class View extends JFrame {
         addButton = new JMenuItem("Add Element");
         editMenu.add(addButton);
         menuBar.add(editMenu);
+
+        JMenu strategyMenu = new JMenu("Max Strategy");
+        defaultMaxStrategyMenuItem = new JMenuItem("Default Strategy");
+        streamApiMaxStrategyMenuItem = new JMenuItem("Stream API Strategy");
+        strategyMenu.add(defaultMaxStrategyMenuItem);
+        strategyMenu.add(streamApiMaxStrategyMenuItem);
+        menuBar.add(strategyMenu);
 
         setJMenuBar(menuBar);
 
@@ -80,6 +89,14 @@ public class View extends JFrame {
 
     public JMenuItem getDisplayPreOrderMenuItem() {
         return displayPreOrderMenuItem;
+    }
+
+    public JMenuItem getDefaultMaxStrategyMenuItem() {
+        return defaultMaxStrategyMenuItem;
+    }
+
+    public JMenuItem getStreamApiMaxStrategyMenuItem() {
+        return streamApiMaxStrategyMenuItem;
     }
 
     public void updateTreeDisplay(JList<?> treeList) {
