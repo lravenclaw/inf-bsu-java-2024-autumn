@@ -1,19 +1,11 @@
 package by.solution.visitor;
 
-```java
-        package by.solution.visitor;
-
 import by.solution.model.TreeList;
-import by.solution.visitor.AbstractTreeVisitor;
-import by.solution.visitor.Visitor;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class MaxPathTreeListVisitor<T extends Comparable<T>>
-        extends AbstractTreeVisitor<T> implements Visitor<T> {
-    private ArrayList<T> result;
-    private TreeList<T> tree;
+public class MaxPathTreeListVisitor<T extends Comparable<T>> extends AbstractTreeVisitor<T> implements Visitor<T> {
+    private List<T> result;
 
     public MaxPathTreeListVisitor(TreeList<T> tree) {
         this.tree = tree;
@@ -29,11 +21,10 @@ public class MaxPathTreeListVisitor<T extends Comparable<T>>
         if (tree == null || tree.isEmpty()) {
             return;
         }
-
-        findMaxPath(0, new ArrayList<>());
+        findMaxPath(1, new ArrayList<>());
     }
 
-    private void findMaxPath(int index, ArrayList<T> currentPath) {
+    private void findMaxPath(int index, List<T> currentPath) {
         if (index >= tree.getList().size() || tree.getList().get(index) == null) {
             return;
         }
@@ -41,13 +32,13 @@ public class MaxPathTreeListVisitor<T extends Comparable<T>>
         currentPath.add(tree.getList().get(index));
 
         T current = tree.getList().get(index);
-        T leftMax = findMax(2 * index + 1);
-        T rightMax = findMax(2 * index + 2);
+        T leftMax = findMax(2 * index);
+        T rightMax = findMax(2 * index + 1);
 
         if (leftMax != null && leftMax.compareTo(current) > 0) {
-            findMaxPath(2 * index + 1, new ArrayList<>(currentPath));
+            findMaxPath(2 * index, new ArrayList<>(currentPath));
         } else if (rightMax != null && rightMax.compareTo(current) > 0) {
-            findMaxPath(2 * index + 2, new ArrayList<>(currentPath));
+            findMaxPath(2 * index + 1, new ArrayList<>(currentPath));
         } else {
             if (result.isEmpty() || current.compareTo(result.get(result.size() - 1)) > 0) {
                 result.clear();
@@ -62,8 +53,8 @@ public class MaxPathTreeListVisitor<T extends Comparable<T>>
         }
 
         T current = tree.getList().get(index);
-        T leftMax = findMax(2 * index + 1);
-        T rightMax = findMax(2 * index + 2);
+        T leftMax = findMax(2 * index);
+        T rightMax = findMax(2 * index + 1);
 
         T max = current;
         if (leftMax != null && leftMax.compareTo(max) > 0) {

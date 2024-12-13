@@ -1,118 +1,105 @@
 package by.solution.controller;
 
+import by.solution.model.TreeList;
+import by.solution.view.View;
+import by.solution.visitor.MaxPathTreeListVisitor;
+import by.solution.visitor.MaxTreeListVisitor;
+
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Controller {
-    private final MapModel<String, String> map1;
-    private final MapModel<String, String> map2;
+    private final TreeList<Integer> tree;
     private final View view;
 
-    public Controller(MapModel<String, String> map1, MapModel<String, String> map2, View view) {
-        this.map1 = map1;
-        this.map2 = map2;
+    public Controller(TreeList<Integer> tree, View view) {
+        this.tree = tree;
         this.view = view;
         initController();
     }
 
     private void initController() {
-        this.view.getAddButton().addActionListener(e -> addElementsToMap());
-
-        this.view.getClearButton().addActionListener(e -> clearMap());
-
-        this.view.getRemoveButton().addActionListener(e -> removeSelectedElementsFromMap());
-
-        this.view.getUniteButton().addActionListener(e -> {
-            UnionMapVisitor<String, String> unionVisitor = new UnionMapVisitor<>(map1);
-            map2.accept(unionVisitor);
-            this.view.updateMapDisplay(unionVisitor.getResult());
-        });
-
-        this.view.getIntersectButton().addActionListener(e -> {
-            IntersectionMapVisitor<String, String> intersectionVisitor = new IntersectionMapVisitor<>(map1);
-            map2.accept(intersectionVisitor);
-            this.view.updateMapDisplay(intersectionVisitor.getResult());
-        });
-
-        this.view.getDifferenceABButton().addActionListener(e -> {
-            DifferenceMapVisitor<String, String> differenceVisitor = new DifferenceMapVisitor<>(map1);
-            map2.accept(differenceVisitor);
-            this.view.updateMapDisplay(differenceVisitor.getResult());
-        });
-
-        this.view.getFirstList().addListSelectionListener(e -> updateRemoveButtonState());
-        this.view.getSecondList().addListSelectionListener(e -> updateRemoveButtonState());
-
-        DocumentListener documentListener = new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                toggleButtonState();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                toggleButtonState();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                toggleButtonState();
-            }
-
-            private void toggleButtonState() {
-                boolean isKeyFieldEmpty = view.getKeyToAddTextField().getText().trim().isEmpty() || view.getKeyToAddTextField().getText().equals("key");
-                boolean isValueFieldEmpty = view.getValueToAddTextField().getText().trim().isEmpty() || view.getValueToAddTextField().getText().equals("value");
-                view.getAddButton().setEnabled(!isKeyFieldEmpty && !isValueFieldEmpty);
-            }
-        };
-
-        this.view.getKeyToAddTextField().getDocument().addDocumentListener(documentListener);
-        this.view.getValueToAddTextField().getDocument().addDocumentListener(documentListener);
+        this.view.getAddButton().addActionListener(e -> addElementToTree());
+        this.view.getOpenMenuItem().addActionListener(e -> openFile());
+        this.view.getDisplayArrayMenuItem().addActionListener(e -> displayTreeAsArray());
+        this.view.getDisplayMaxMenuItem().addActionListener(e -> displayMaxElement());
+        this.view.getDisplayMaxPathMenuItem().addActionListener(e -> displayPathToMax());
+        this.view.getDisplayPreOrderMenuItem().addActionListener(e -> displayPreOrderTraversal());
     }
 
-    private void addElementsToMap() {
-        String key = this.view.getKeyToAddTextField().getText().trim();
-        String value = this.view.getValueToAddTextField().getText().trim();
-        if (key.equals("key") || value.equals("value")) {
-            return;
+    private void addElementToTree() {
+        String valueStr = JOptionPane.showInputDialog(view, "Enter an integer value:");
+        if (valueStr != null && !valueStr.trim().isEmpty()) {
+            try {
+                int value = Integer.parseInt(valueStr.trim());
+                tree.add(value);
+                this.view.updateTreeDisplay(tree.toJList());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(view, "Invalid input. Please enter an integer.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(view, "Input cannot be empty.");
         }
-        MapModel<String, String> selectedMap = view.isMapASelected() ? map1 : map2;
-        selectedMap.put(key, value);
-        this.view.updateMapDisplay(selectedMap);
-        this.view.getClearButton().setEnabled(true);
-        updateClearButtonState();
     }
 
-    private void clearMap() {
-        MapModel<String, String> selectedMap = view.isMapASelected() ? map1 : map2;
-        selectedMap.clear();
-        this.view.updateMapDisplay(selectedMap);
-        updateClearButtonState();
-    }
-
-    private void removeSelectedElementsFromMap() {
-        if (!view.isMapASelected() && !view.isMapBSelected()) {
-            return;
+    private void openFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showOpenDialog(view);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            loadTreeFromFile(selectedFile.getAbsolutePath());
         }
-        MapModel<String, String> selectedMap = view.isMapASelected() ? map1 : map2;
-        JList<MapModel.Entry<String, String>> selectedList = view.isMapASelected() ? view.getFirstList() : view.getSecondList();
-        List<MapModel.Entry<String, String>> selectedValues = selectedList.getSelectedValuesList();
-        for (MapModel.Entry<String, String> entry : selectedValues) {
-            selectedMap.remove(entry.getKey());
+    }
+
+    private void loadTreeFromFile(String filePath) {
+        if (filePath != null && !filePath.trim().isEmpty()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(filePath.trim()))) {
+                String line;
+                tree.clear();
+                while ((line = reader.readLine()) != null) {
+                    try {
+                        int value = Integer.parseInt(line.trim());
+                        tree.add(value);
+                    } catch (NumberFormatException ex) {
+                        // Ignore invalid lines
+                    }
+                }
+                this.view.updateTreeDisplay(tree.toJList());
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(view, "Error reading file: " + ex.getMessage());
+            }
+        } else {
+            JOptionPane.showMessageDialog(view, "File path cannot be empty.");
         }
-        this.view.updateMapDisplay(selectedMap);
-        updateClearButtonState();
     }
 
-    private void updateClearButtonState() {
-        MapModel<String, String> selectedMap = view.isMapASelected() ? map1 : map2;
-        this.view.getClearButton().setEnabled(!selectedMap.isEmpty());
+    private void displayTreeAsArray() {
+        List<Integer> elements = tree.getList();
+        this.view.updateArrayDisplay(elements.toString());
     }
 
-    private void updateRemoveButtonState() {
-        boolean isAnyFieldSelected = !this.view.getFirstList().isSelectionEmpty() || !this.view.getSecondList().isSelectionEmpty();
-        this.view.getRemoveButton().setEnabled(isAnyFieldSelected);
+    private void displayMaxElement() {
+        MaxTreeListVisitor<Integer> maxVisitor = new MaxTreeListVisitor<>(tree);
+        tree.accept(maxVisitor);
+        Integer maxElement = maxVisitor.getResult().get(0);
+        this.view.updateMaxDisplay(maxElement.toString());
+    }
+
+    private void displayPathToMax() {
+        MaxPathTreeListVisitor<Integer> maxPathVisitor = new MaxPathTreeListVisitor<>(tree);
+        tree.accept(maxPathVisitor);
+        List<Integer> path = maxPathVisitor.getResult();
+        String pathString = path.stream().map(String::valueOf).collect(Collectors.joining(" - "));
+        this.view.updatePathDisplay(pathString);
+    }
+
+    private void displayPreOrderTraversal() {
+        List<Integer> preOrder = tree.preOrderTraversal();
+        this.view.updatePreOrderDisplay(preOrder.toString());
     }
 }
