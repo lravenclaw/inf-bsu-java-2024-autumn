@@ -137,7 +137,7 @@ public class ToyManagerApp extends JFrame {
         String input = JOptionPane.showInputDialog(ToyManagerApp.this, "Введите возраст:");
         if (input != null && !input.isEmpty()) {
             try {
-                toysAfter = getToysFromAgeStreamAPI(toys, Integer.parseInt(input));
+                toysAfter = getToysFromAge(toys, Integer.parseInt(input));
                 displayAreaAfter.setText(ToyParser.toString(toysAfter));
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Ошибка при чтении данных", "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -167,7 +167,7 @@ public class ToyManagerApp extends JFrame {
         String input = JOptionPane.showInputDialog(ToyManagerApp.this, "Введите cуммарную стоимость:");
         if (input != null && !input.isEmpty()) {
             try {
-                toysAfter = getToysWithTotalPriceStreamAPI(toys, Double.parseDouble(input));
+                toysAfter = getToysWithTotalPrice(toys, Double.parseDouble(input));
                 displayAreaAfter.setText(ToyParser.toString(toysAfter));
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Ошибка при чтении данных", "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -202,9 +202,9 @@ public class ToyManagerApp extends JFrame {
         TreeSet<Integer> used = new TreeSet<>();
         double currentSum = 0.;
         boolean full = false;
+        Random random = new Random();
 
         while (!(full ||toys.isEmpty())) {
-            Random random = new Random();
             Integer index = random.nextInt(toys.size());
             if (used.contains(index)) {
                 continue;
