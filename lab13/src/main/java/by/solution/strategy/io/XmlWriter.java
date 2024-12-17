@@ -16,35 +16,37 @@ import java.io.File;
 import java.util.List;
 
 public class XmlWriter {
-    public static void write(List<Toy> toys, String filePath) throws ParserConfigurationException, TransformerException {
+    public static void write(List<Toy> toys, File file) throws ParserConfigurationException, TransformerException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
         Document doc = docBuilder.newDocument();
         Element rootElement = doc.createElement("toys");
         doc.appendChild(rootElement);
 
-        for (Toy toy : toys) {
-            Element toyElement = doc.createElement("toy");
+        if (toys != null) {
+            for (Toy toy : toys) {
+                Element toyElement = doc.createElement("toy");
 
-            Element name = doc.createElement("name");
-            name.appendChild(doc.createTextNode(toy.name));
-            toyElement.appendChild(name);
+                Element name = doc.createElement("name");
+                name.appendChild(doc.createTextNode(toy.name));
+                toyElement.appendChild(name);
 
-            Element price = doc.createElement("price");
-            price.appendChild(doc.createTextNode(String.valueOf(toy.price)));
-            toyElement.appendChild(price);
+                Element price = doc.createElement("price");
+                price.appendChild(doc.createTextNode(String.valueOf(toy.price)));
+                toyElement.appendChild(price);
 
-            Element ageLimit = doc.createElement("ageLimit");
-            ageLimit.appendChild(doc.createTextNode(String.valueOf(toy.ageLimit)));
-            toyElement.appendChild(ageLimit);
+                Element ageLimit = doc.createElement("ageLimit");
+                ageLimit.appendChild(doc.createTextNode(String.valueOf(toy.ageLimit)));
+                toyElement.appendChild(ageLimit);
 
-            rootElement.appendChild(toyElement);
+                rootElement.appendChild(toyElement);
+            }
         }
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
         DOMSource source = new DOMSource(doc);
-        StreamResult result = new StreamResult(new File(filePath));
+        StreamResult result = new StreamResult(file);
         transformer.transform(source, result);
     }
 }

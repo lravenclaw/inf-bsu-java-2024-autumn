@@ -4,16 +4,14 @@ import by.solution.strategy.ProcessStrategy;
 import by.solution.strategy.age.DefaultAgeStrategy;
 import by.solution.strategy.age.StreamAPIAgeStrategy;
 import by.solution.strategy.data.Toy;
-import by.solution.strategy.io.DomReader;
-import by.solution.strategy.io.ReaderStrategy;
-import by.solution.strategy.io.SaxReader;
-import by.solution.strategy.io.ToyUtils;
+import by.solution.strategy.io.*;
 import by.solution.strategy.price.DefaultPriceStrategy;
 import by.solution.strategy.price.StreamAPIPriceStrategy;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -101,11 +99,11 @@ public class ToyManagerApp extends JFrame {
 
         JMenuItem strategyDeafaultAge = new JMenuItem("DefaultAgeStrategy");
         strategyDeafaultAge.addActionListener(e -> ageStrategy = new DefaultAgeStrategy());
-        strategyPrice.add(strategyDeafaultAge);
+        strategyAge.add(strategyDeafaultAge);
 
         JMenuItem strategyStreamAPIAge = new JMenuItem("StreamAPIAgeStrategy");
         strategyStreamAPIAge.addActionListener(e -> ageStrategy = new StreamAPIAgeStrategy());
-        strategyPrice.add(strategyStreamAPIAge);
+        strategyAge.add(strategyStreamAPIAge);
 
         JMenuItem strategyDefaultPrice = new JMenuItem("DefaultPriceStrategy");
         strategyDefaultPrice.addActionListener(e -> priceStrategy = new DefaultPriceStrategy());
@@ -172,8 +170,11 @@ public class ToyManagerApp extends JFrame {
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             try {
-                readerStrategy.read(selectedFile);
-            } catch (ParserConfigurationException | SAXException e) {
+                toys = readerStrategy.read(selectedFile);
+                toysAfter = toys;
+                displayAreaBefore.setText(ToyUtils.toString(toys));
+                displayAreaAfter.setText(ToyUtils.toString(toysAfter));
+            } catch (IOException | ParserConfigurationException | SAXException e) {
                 JOptionPane.showMessageDialog(this, "Ошибка при чтении файла", "Ошибка", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -184,10 +185,10 @@ public class ToyManagerApp extends JFrame {
         int returnValue = fileChooser.showSaveDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile))) {
-                writer.write(ToyUtils.toString(toysAfter));
+            try {
+                XmlWriter.write(toysAfter, selectedFile);
                 JOptionPane.showMessageDialog(this, "Файл успешно сохранен", "Успех", JOptionPane.INFORMATION_MESSAGE);
-            } catch (IOException e) {
+            } catch (ParserConfigurationException | TransformerException e) {
                 JOptionPane.showMessageDialog(this, "Ошибка при сохранении файла", "Ошибка", JOptionPane.ERROR_MESSAGE);
             }
         }

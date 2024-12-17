@@ -16,56 +16,49 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class SaxReader implements ReaderStrategy {
-    private static final Logger logger = Logger.getLogger(SaxReader.class.getName());
-
     @Override
-    public List<Toy> read(File file) throws SAXException {
+    public List<Toy> read(File file) throws IOException, SAXException, ParserConfigurationException {
         List<Toy> toys = new ArrayList<>();
-        try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
-            DefaultHandler handler = new DefaultHandler() {
-                Toy toy = null;
-                String content = null;
 
-                @Override
-                public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-                    if (qName.equals("toy")) {
-                        toy = new Toy("", 0, 0);
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        SAXParser saxParser = factory.newSAXParser();
+        DefaultHandler handler = new DefaultHandler() {
+            Toy toy = null;
+            String content = null;
+
+            @Override
+            public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+                if (qName.equals("toy")) {
+                    toy = new Toy("", 0, 0);
+                }
+            }
+
+            @Override
+            public void endElement(String uri, String localName, String qName) throws SAXException {
+                if (toy != null) {
+                    switch (qName) {
+                        case "name":
+                            toy.name = content;
+                            break;
+                        case "price":
+                            toy.price = Integer.parseInt(content);
+                            break;
+                        case "ageLimit":
+                            toy.ageLimit = Integer.parseInt(content);
+                            break;
+                        case "toy":
+                            toys.add(toy);
+                            break;
                     }
                 }
+            }
 
-                @Override
-                public void endElement(String uri, String localName, String qName) throws SAXException {
-                    if (toy != null) {
-                        switch (qName) {
-                            case "name":
-                                toy.name = content;
-                                break;
-                            case "price":
-                                toy.price = Integer.parseInt(content);
-                                break;
-                            case "ageLimit":
-                                toy.ageLimit = Integer.parseInt(content);
-                                break;
-                            case "toy":
-                                toys.add(toy);
-                                logger.info("Toy added: " + toy);
-                                break;
-                        }
-                    }
-                }
-
-                @Override
-                public void characters(char[] ch, int start, int length) throws SAXException {
-                    content = new String(ch, start, length);
-                }
-            };
-            saxParser.parse(file, handler);
-            logger.info("Number of toys parsed: " + toys.size());
-        } catch (ParserConfigurationException | IOException e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void characters(char[] ch, int start, int length) throws SAXException {
+                content = new String(ch, start, length);
+            }
+        };
+        saxParser.parse(file, handler);
         return toys;
     }
 }
