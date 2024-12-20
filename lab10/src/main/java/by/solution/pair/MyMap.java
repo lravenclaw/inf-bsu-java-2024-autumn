@@ -85,7 +85,7 @@ public class MyMap<K, V> implements Aggregate<MyMap.Entry<K, V>> {
             Entry<K, V> entry = iterator.currentItem();
             iterator.next();
             sb.append(entry.toString());
-            if (iterator.isDone()) {
+            if (!iterator.isDone()) {
                 sb.append(", ");
             }
         }
