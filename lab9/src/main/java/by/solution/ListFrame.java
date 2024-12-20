@@ -31,18 +31,26 @@ public class ListFrame extends JFrame {
         rightToLeft = new JButton("<");
 
         leftToRight.addActionListener(e -> {
-            List<String> selectedValues = list1.getSelectedValuesList();
-            for (String value : selectedValues) {
-                data1.removeElement(value);
-                data2.addElement(value);
+            int[] indecies = list1.getSelectedIndices();
+            for (int index : indecies) {
+                data2.addElement(data1.get(index));
+            }
+            int counter = 0;
+            for (int index : indecies) {
+                data1.removeElementAt(index - counter);
+                ++counter;
             }
         });
 
         rightToLeft.addActionListener(e -> {
-            List<String> selectedValues = list2.getSelectedValuesList();
-            for (String value : selectedValues) {
-                data2.removeElement(value);
-                data1.addElement(value);
+            int[] indecies = list1.getSelectedIndices();
+            for (int index : indecies) {
+                data1.addElement(data2.get(index));
+            }
+            int counter = 0;
+            for (int index : indecies) {
+                data2.removeElementAt(index - counter);
+                ++counter;
             }
         });
 

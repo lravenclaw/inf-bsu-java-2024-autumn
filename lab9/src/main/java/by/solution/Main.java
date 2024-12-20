@@ -14,7 +14,7 @@ public class Main {
 
         ListFrame listFrame = new ListFrame(
                 List.of("a", "b", "c", "d"),
-                List.of("e", "f", "g", "h"));
+                List.of("e", "e", "e", "e"));
         tabbedPane.addTab("List Frame", listFrame.getContentPane());
 
 
