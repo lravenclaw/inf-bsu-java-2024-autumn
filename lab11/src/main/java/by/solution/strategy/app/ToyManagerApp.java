@@ -1,6 +1,7 @@
 package by.solution.strategy.app;
 
 import by.solution.strategy.Strategy;
+import by.solution.strategy.age.DefaultAgeStrategy;
 import by.solution.strategy.age.StreamAPIAgeStrategy;
 import by.solution.strategy.data.Toy;
 import by.solution.strategy.parser.ToyParser;
@@ -79,9 +80,34 @@ public class ToyManagerApp extends JFrame {
         taskGetListsWithTotalSum.addActionListener((e) -> toysWithPrice());
         taskMenu.add(taskGetListsWithTotalSum);
 
+        JMenu strategyMenu = new JMenu("Стратегия");
+
+        JMenu ageStrategyMenu = new JMenu("Стратегия по возрасту");
+        JMenuItem defaultAgeStrategyItem = new JMenuItem("DefaultAgeStrategy");
+        defaultAgeStrategyItem.addActionListener(e -> ageStrategy = new DefaultAgeStrategy());
+        ageStrategyMenu.add(defaultAgeStrategyItem);
+
+        JMenuItem streamAPIAgeStrategyItem = new JMenuItem("StreamAPIAgeStrategy");
+        streamAPIAgeStrategyItem.addActionListener(e -> ageStrategy = new StreamAPIAgeStrategy());
+        ageStrategyMenu.add(streamAPIAgeStrategyItem);
+
+        strategyMenu.add(ageStrategyMenu);
+
+        JMenu priceStrategyMenu = new JMenu("Стратегия по цене");
+        JMenuItem defaultPriceStrategyItem = new JMenuItem("DefaultPriceStrategy");
+        defaultPriceStrategyItem.addActionListener(e -> priceStrategy = new DefaultPriceStrategy());
+        priceStrategyMenu.add(defaultPriceStrategyItem);
+
+        JMenuItem streamAPIPriceStrategyItem = new JMenuItem("StreamAPIPriceStrategy");
+        streamAPIPriceStrategyItem.addActionListener(e -> priceStrategy = new StreamAPIPriceStrategy());
+        priceStrategyMenu.add(streamAPIPriceStrategyItem);
+
+        strategyMenu.add(priceStrategyMenu);
+
         menuBar.add(fileMenu);
         menuBar.add(viewMenu);
         menuBar.add(taskMenu);
+        menuBar.add(strategyMenu);
         setJMenuBar(menuBar);
 
         setLayout(new GridLayout(1, 2));
