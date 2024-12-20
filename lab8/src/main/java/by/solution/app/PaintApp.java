@@ -7,7 +7,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.awt.event.*;
 
 
 class PaintApp extends JFrame {
@@ -22,13 +21,6 @@ class PaintApp extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
 
         createMenuBar();
-
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                paintPanel.updatePanel();
-            }
-        });
 
         setVisible(true);
     }
@@ -136,6 +128,4 @@ class PaintApp extends JFrame {
     }
 
     private PaintPanel paintPanel;
-    private Color currentColor = Color.BLACK;
-    private Color backgroundColor = Color.WHITE;
 }

@@ -1,17 +1,13 @@
 package by.solution.app;
 
-import by.solution.Pair;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
 public class PaintPanel extends JPanel {
     private BufferedImage image;
-    private ArrayList<Pair<Point, Color>> points = new ArrayList<>();
     private Point lastPoint = null;
 
     private Color backgroundColor = Color.WHITE;
@@ -23,20 +19,17 @@ public class PaintPanel extends JPanel {
         addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                Point currentPoint = new Point(e.getX(), e.getY());
                 if (lastPoint != null) {
-                    points.add(new Pair<>(lastPoint, currentColor));
-                    points.add(new Pair<>(currentPoint, currentColor));
+                    updatePanel(lastPoint, e.getPoint());
                 }
-                lastPoint = currentPoint;
-                updatePanel();
+                lastPoint = e.getPoint();
             }
         });
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                lastPoint = new Point(e.getX(), e.getY());
+                lastPoint = e.getPoint();
             }
 
             @Override
@@ -49,40 +42,13 @@ public class PaintPanel extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         if (image != null) {
-            g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
+            g.drawImage(image, 0, 0, this);
         }
-
-        for (int i = 1; i < points.size(); i += 2) {
-            Point p1 = points.get(i - 1).first;
-            Point p2 = points.get(i).first;
-            g.setColor(points.get(i).second);
-            g.drawLine(p1.x, p1.y, p2.x, p2.y);
-        }
-
-        g.dispose();
-    }
-
-    public void  updatePanel() {
-        Graphics g = getGraphics();
-        var size = points.size();
-
-        if (size < 2) {
-            return;
-        }
-
-        Point p1 = points.get(size - 2).first;
-        Point p2 = points.get(size -1).first;
-        g.setColor(points.get(size - 1).second);
-        g.drawLine(p1.x, p1.y, p2.x, p2.y);
-
-        g.dispose();
     }
 
     public void setImage(BufferedImage img) {
         this.image = img;
-        points.clear();
         repaint();
     }
 
@@ -95,7 +61,40 @@ public class PaintPanel extends JPanel {
     }
 
     public void clear() {
-        image = null;
-        points.clear();
+        if (image != null) {
+            Graphics imageGraphics = image.createGraphics();
+            imageGraphics.setColor(getBackground());
+            imageGraphics.fillRect(0, 0, image.getWidth(), image.getHeight());
+            imageGraphics.dispose();
+
+            Graphics g = getGraphics();
+            if (g == null) {
+                return;
+            }
+
+            g.setColor(getBackground());
+            g.fillRect(0, 0, getWidth(), getHeight());
+            g.dispose();
+        }
     }
+
+    private void updatePanel(Point a, Point b) {
+        if (image == null) {
+            image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        }
+
+        Graphics imageGraphics = image.createGraphics();
+        imageGraphics.setColor(currentColor);
+        imageGraphics.drawLine(a.x, a.y, b.x, b.y);
+        imageGraphics.dispose();
+
+        Graphics g = getGraphics();
+        if (g == null) {
+            return;
+        }
+        g.setColor(currentColor);
+        g.drawLine(a.x, a.y, b.x, b.y);
+        g.dispose();
+    }
+
 }
